@@ -1,28 +1,45 @@
 package com.example.BankApp;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import java.time.LocalDateTime;
 
+@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 
 public class Transaction {
-    private String transactionId;
-    private String accountNumber;
-    private TransactionType transactionType;
-    private double amount;
-    private double balanceAfterTransaction;
-    private LocalDateTime timestamp;
-    public TransactionStatus transactionStatus;
 
-    public enum TransactionType {
-      DEPOSIT,
-      WITHDRAW
-    }
-    public enum TransactionStatus {
-      SUCCESS,
-      FAILED
-    }
+  @Id
+  private String transactionId;
+
+  private String accountNumber;
+
+  @Enumerated(EnumType.STRING)
+  private TransactionType transactionType;
+
+  private double amount;
+
+  private double balanceAfterTransaction;
+
+  private LocalDateTime timestamp;
+
+  @Enumerated(EnumType.STRING)
+  private TransactionStatus transactionStatus;
+
+  public enum TransactionType {
+    DEPOSIT, WITHDRAW
+  }
+
+  public enum TransactionStatus {
+    SUCCESS, FAILED
+  }
 }
