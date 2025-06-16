@@ -1,4 +1,4 @@
-package com.example.BankApp;
+package com.example.BankApp.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -18,4 +18,5 @@ public class BankAccount {
   private String accountNumber;
   private String accountHolderName;
   private double balance;
+  private boolean isActive;
 }

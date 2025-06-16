@@ -1,6 +1,6 @@
-package TransactionRepository;
+package com.example.BankApp.repository;
 
-import com.example.BankApp.Transaction;
+import com.example.BankApp.model.Transaction;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 

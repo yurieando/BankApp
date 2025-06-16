@@ -1,4 +1,4 @@
-package com.example.BankApp;
+package com.example.BankApp.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -36,7 +36,7 @@ public class Transaction {
   private TransactionStatus transactionStatus;
 
   public enum TransactionType {
-    DEPOSIT, WITHDRAW
+    DEPOSIT, WITHDRAW, OPEN, CLOSE
   }
 
   public enum TransactionStatus {
