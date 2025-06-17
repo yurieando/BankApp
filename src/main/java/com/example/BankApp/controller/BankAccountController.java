@@ -2,7 +2,7 @@ package com.example.BankApp.controller;
 
 import com.example.BankApp.dto.AccountCreationRequest;
 import com.example.BankApp.dto.AmountRequest;
-import com.example.BankApp.model.BankAccount;
+import com.example.BankApp.dto.BankAccountResponse;
 import com.example.BankApp.model.Transaction;
 import com.example.BankApp.repository.TransactionRepository;
 import com.example.BankApp.service.BankAccountService;
@@ -30,7 +30,7 @@ public class BankAccountController {
    * @return 作成された口座の情報
    */
   @PostMapping("/createAccount")
-  public BankAccount createAccount(@RequestBody @Valid AccountCreationRequest request) {
+  public BankAccountResponse createAccount(@RequestBody @Valid AccountCreationRequest request) {
     return bankAccountService.createAccount(request);
   }
 
@@ -40,7 +40,7 @@ public class BankAccountController {
    * @return 指定された口座の情報(残高を含む)
    */
   @GetMapping("/balance/{accountNumber}")
-  public BankAccount getBalance(@PathVariable String accountNumber) {
+  public BankAccountResponse getBalance(@PathVariable String accountNumber) {
     return bankAccountService.getBalance(accountNumber);
   }
 
@@ -51,7 +51,7 @@ public class BankAccountController {
    * @return 入金後の口座情報
    */
   @PostMapping("/deposit/{accountNumber}")
-  public BankAccount deposit(@PathVariable String accountNumber,
+  public BankAccountResponse deposit(@PathVariable String accountNumber,
       @RequestBody AmountRequest amountRequest) {
     return bankAccountService.deposit(accountNumber, amountRequest);
   }
@@ -63,7 +63,7 @@ public class BankAccountController {
    * @return 出金後の口座情報
    */
   @PostMapping("/withdraw/{accountNumber}")
-  public BankAccount withdraw(@PathVariable String accountNumber,
+  public BankAccountResponse withdraw(@PathVariable String accountNumber,
       @RequestBody AmountRequest amountRequest) {
     return bankAccountService.withdraw(accountNumber, amountRequest);
   }
