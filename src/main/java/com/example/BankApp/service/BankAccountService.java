@@ -1,7 +1,9 @@
 package com.example.BankApp.service;
 
+import com.example.BankApp.Mapper.BankAccountMapper;
 import com.example.BankApp.dto.AccountCreationRequest;
 import com.example.BankApp.dto.AmountRequest;
+import com.example.BankApp.dto.BankAccountResponse;
 import com.example.BankApp.model.BankAccount;
 import com.example.BankApp.model.Transaction;
 import com.example.BankApp.model.Transaction.TransactionStatus;
@@ -28,7 +30,7 @@ public class BankAccountService {
    * @param request 口座情報を含むリクエスト
    * @return 作成された口座の情報
    */
-  public BankAccount createAccount(AccountCreationRequest request) {
+  public BankAccountResponse createAccount(AccountCreationRequest request) {
     String accountNumber = generateSequentialAccountNumber();
     BankAccount account = new BankAccount(accountNumber, request.getAccountHolderName(), 0.0, true);
     bankAccountRepository.save(account);
@@ -43,7 +45,8 @@ public class BankAccountService {
         .transactionStatus(TransactionStatus.SUCCESS)
         .build();
     transactionRepository.save(transaction);
-    return account;
+    return BankAccountMapper.toResponse(account);
+
   }
 
   /**
@@ -67,12 +70,15 @@ public class BankAccountService {
    * @param accountNumber 口座番号
    * @return 指定された口座の情報
    */
-  public BankAccount getBalance(String accountNumber) {
-    return bankAccountRepository.findById(accountNumber)
-        .orElseThrow(() -> new RuntimeException("口座が存在しません。"));
+  public BankAccountResponse getBalance(String accountNumber) {
+    BankAccount account = bankAccountRepository.findById(accountNumber)
+        .orElseThrow(() -> new IllegalArgumentException("口座が存在しません。"));
+
+    return BankAccountMapper.toResponse(account);
+
   }
 
-  public BankAccount deposit(String accountNumber, AmountRequest amountRequest) {
+  public BankAccountResponse deposit(String accountNumber, AmountRequest amountRequest) {
     BankAccount account = bankAccountRepository.findById(accountNumber)
         .orElseThrow(() -> new IllegalArgumentException("口座が存在しません。"));
 
@@ -89,10 +95,10 @@ public class BankAccountService {
         .transactionStatus(TransactionStatus.SUCCESS)
         .build();
     transactionRepository.save(transaction);
-    return account;
+    return BankAccountMapper.toResponse(account);
   }
 
-  public BankAccount withdraw(String accountNumber, AmountRequest amountrequest) {
+  public BankAccountResponse withdraw(String accountNumber, AmountRequest amountrequest) {
     BankAccount account = bankAccountRepository.findById(accountNumber)
         .orElseThrow(() -> new IllegalArgumentException("口座が存在しません。"));
 
@@ -123,7 +129,7 @@ public class BankAccountService {
       transactionRepository.save(transaction);
       throw new IllegalArgumentException("残高不足です。");
     }
-    return account;
+    return BankAccountMapper.toResponse(account);
   }
 
   /**
