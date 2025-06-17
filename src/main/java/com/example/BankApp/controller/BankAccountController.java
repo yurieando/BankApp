@@ -1,6 +1,7 @@
 package com.example.BankApp.controller;
 
 import com.example.BankApp.dto.AccountCreationRequest;
+import com.example.BankApp.dto.AdminBankAccountResponse;
 import com.example.BankApp.dto.AmountRequest;
 import com.example.BankApp.dto.BankAccountResponse;
 import com.example.BankApp.model.Transaction;
@@ -25,6 +26,15 @@ public class BankAccountController {
   private final BankAccountService bankAccountService;
 
   /*
+   * 口座の一覧を取得します。
+   * @return 口座のリスト
+   */
+  @GetMapping("/accountsForAdmin")
+  public List<AdminBankAccountResponse> getAllAccounts() {
+    return bankAccountService.getAllAccountsForAdmin();
+  }
+
+  /*
    * 新しい口座を作成します。
    * @param request 口座情報を含むリクエストボディ
    * @return 作成された口座の情報
@@ -35,11 +45,11 @@ public class BankAccountController {
   }
 
   /*
-   *　残高の照会をします。
+   *　口座情報の照会をします。
    * @param accountNumber 口座番号
    * @return 指定された口座の情報(残高を含む)
    */
-  @GetMapping("/balance/{accountNumber}")
+  @GetMapping("/account/{accountNumber}")
   public BankAccountResponse getBalance(@PathVariable String accountNumber) {
     return bankAccountService.getBalance(accountNumber);
   }
