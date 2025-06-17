@@ -2,6 +2,7 @@ package com.example.BankApp.service;
 
 import com.example.BankApp.Mapper.BankAccountMapper;
 import com.example.BankApp.dto.AccountCreationRequest;
+import com.example.BankApp.dto.AdminBankAccountResponse;
 import com.example.BankApp.dto.AmountRequest;
 import com.example.BankApp.dto.BankAccountResponse;
 import com.example.BankApp.model.BankAccount;
@@ -23,6 +24,19 @@ public class BankAccountService {
 
   private final BankAccountRepository bankAccountRepository;
   private final TransactionRepository transactionRepository;
+
+  /**
+   * すべての口座情報を取得します。
+   *
+   * @return 口座のリスト
+   */
+  public List<AdminBankAccountResponse> getAllAccountsForAdmin() {
+    List<BankAccount> accounts = bankAccountRepository.findAll(
+        Sort.by(Sort.Direction.DESC, "accountNumber"));
+    return accounts.stream()
+        .map(BankAccountMapper::toAdminResponse)
+        .toList();
+  }
 
   /**
    * 新しい口座を作成します。
