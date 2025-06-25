@@ -11,6 +11,6 @@ public class AdminBankAccountResponse {
 
   private String accountNumber;
   private String accountHolderName;
-  private double balance;
+  private int balance;
   private boolean isActive;
 }

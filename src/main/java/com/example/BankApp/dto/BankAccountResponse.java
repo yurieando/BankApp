@@ -13,5 +13,5 @@ public class BankAccountResponse {
 
   private String accountNumber;
   private String accountHolderName;
-  private double balance;
+  private int balance;
 }

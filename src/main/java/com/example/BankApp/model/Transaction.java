@@ -1,5 +1,6 @@
 package com.example.BankApp.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,15 +25,17 @@ public class Transaction {
   private String accountNumber;
 
   @Enumerated(EnumType.STRING)
+  @Column(length = 10)
   private TransactionType transactionType;
 
-  private double amount;
+  private int amount;
 
-  private double balanceAfterTransaction;
+  private int balanceAfterTransaction;
 
   private LocalDateTime timestamp;
 
   @Enumerated(EnumType.STRING)
+  @Column(length = 10)
   private TransactionStatus transactionStatus;
 
   public enum TransactionType {
