@@ -5,6 +5,7 @@ import com.example.BankApp.dto.AccountCreationRequest;
 import com.example.BankApp.dto.AdminBankAccountResponse;
 import com.example.BankApp.dto.AmountRequest;
 import com.example.BankApp.dto.BankAccountResponse;
+import com.example.BankApp.exception.ResourceNotFoundException;
 import com.example.BankApp.model.BankAccount;
 import com.example.BankApp.model.Transaction;
 import com.example.BankApp.model.Transaction.TransactionStatus;
@@ -17,6 +18,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +32,7 @@ public class BankAccountService {
    *
    * @return 口座のリスト
    */
+  @Transactional
   public List<AdminBankAccountResponse> getAllAccountsForAdmin() {
     List<BankAccount> accounts = bankAccountRepository.findAll(
         Sort.by(Sort.Direction.DESC, "accountNumber"));
@@ -44,9 +47,10 @@ public class BankAccountService {
    * @param request 口座情報を含むリクエスト
    * @return 作成された口座の情報
    */
+  @Transactional
   public BankAccountResponse createAccount(AccountCreationRequest request) {
     String accountNumber = generateSequentialAccountNumber();
-    BankAccount account = new BankAccount(accountNumber, request.getAccountHolderName(), 0.0, true);
+    BankAccount account = new BankAccount(accountNumber, request.getAccountHolderName(), 0, true);
     bankAccountRepository.save(account);
 
     Transaction transaction = Transaction.builder()
@@ -68,6 +72,7 @@ public class BankAccountService {
    *
    * @return 新しい口座番号
    */
+  @Transactional
   private String generateSequentialAccountNumber() {
     List<BankAccount> allAccounts = bankAccountRepository.findAll(
         Sort.by(Sort.Direction.DESC, "accountNumber"));
@@ -84,17 +89,28 @@ public class BankAccountService {
    * @param accountNumber 口座番号
    * @return 指定された口座の情報
    */
+  @Transactional
   public BankAccountResponse getBalance(String accountNumber) {
     BankAccount account = bankAccountRepository.findById(accountNumber)
-        .orElseThrow(() -> new IllegalArgumentException("口座が存在しません。"));
-
+        .orElseThrow(() -> new ResourceNotFoundException("口座が存在しません。"));
     return BankAccountMapper.toResponse(account);
-
   }
 
+  /**
+   * 口座に入金を行います。
+   *
+   * @param accountNumber 口座番号
+   * @param amountRequest 入金金額を含むリクエスト
+   * @return 入金後の口座情報
+   */
+  @Transactional
   public BankAccountResponse deposit(String accountNumber, AmountRequest amountRequest) {
     BankAccount account = bankAccountRepository.findById(accountNumber)
-        .orElseThrow(() -> new IllegalArgumentException("口座が存在しません。"));
+        .orElseThrow(() -> new ResourceNotFoundException("口座が存在しません。"));
+
+    if (!account.isActive()) {
+      throw new IllegalArgumentException("この口座は既に解約されています。");
+    }
 
     account.setBalance(account.getBalance() + amountRequest.getAmount());
     bankAccountRepository.save(account);
@@ -112,9 +128,21 @@ public class BankAccountService {
     return BankAccountMapper.toResponse(account);
   }
 
+  /**
+   * 口座から出金を行います。
+   *
+   * @param accountNumber 口座番号
+   * @param amountrequest 出金金額を含むリクエスト
+   * @return 出金後の口座情報
+   */
+  @Transactional
   public BankAccountResponse withdraw(String accountNumber, AmountRequest amountrequest) {
     BankAccount account = bankAccountRepository.findById(accountNumber)
-        .orElseThrow(() -> new IllegalArgumentException("口座が存在しません。"));
+        .orElseThrow(() -> new ResourceNotFoundException("口座が存在しません。"));
+
+    if (!account.isActive()) {
+      throw new IllegalArgumentException("この口座は既に解約されています。");
+    }
 
     if (amountrequest.getAmount() <= account.getBalance()) {
       account.setBalance(account.getBalance() - amountrequest.getAmount());
@@ -147,17 +175,18 @@ public class BankAccountService {
   }
 
   /**
-   * 口座の削除を行います。
+   * 口座の解約を行います。
    *
    * @param accountNumber 口座番号
-   * @return 口座削除の結果メッセージ
+   * @return 口座解約の結果メッセージ
    */
+  @Transactional
   public String closeAccount(String accountNumber) {
     if (accountNumber == null || accountNumber.trim().isEmpty()) {
       throw new IllegalArgumentException("口座番号が無効です。");
     }
     BankAccount account = bankAccountRepository.findById(accountNumber)
-        .orElseThrow(() -> new IllegalArgumentException("口座が存在しません。"));
+        .orElseThrow(() -> new ResourceNotFoundException("口座が存在しません。"));
     if (account.getBalance() > 0) {
       throw new IllegalArgumentException("残高があるため、口座を解約できません。");
     }
