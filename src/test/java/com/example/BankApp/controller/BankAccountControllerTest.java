@@ -43,7 +43,7 @@ class BankAccountControllerTest {
   }
 
   @Test
-  void 口座一覧取得_正常系_口座一覧が空の場合_200エラーが返ること() throws Exception {
+  void 口座一覧取得_正常系_口座が存在しない場合でも空リストが返ること() throws Exception {
     mockMvc.perform(get("/accountsForAdmin"))
         .andExpect(status().isOk());
     verify(bankAccountService).getAllAccountsForAdmin();

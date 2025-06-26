@@ -76,11 +76,17 @@ public class BankAccountService {
   private String generateSequentialAccountNumber() {
     List<BankAccount> allAccounts = bankAccountRepository.findAll(
         Sort.by(Sort.Direction.DESC, "accountNumber"));
-    if (allAccounts.isEmpty()) {
-      return "0000001";
+
+    long nextAccountNumber = 1;
+    if (!allAccounts.isEmpty()) {
+      long max = Long.parseLong(allAccounts.get(0).getAccountNumber());
+      nextAccountNumber = max + 1;
     }
-    long max = Long.parseLong(allAccounts.get(0).getAccountNumber());
-    return String.format("%07d", max + 1);
+
+    if (nextAccountNumber > 9999999) {
+      throw new IllegalStateException("口座番号の上限に達しました。");
+    }
+    return String.format("%07d", nextAccountNumber);
   }
 
   /**
@@ -169,7 +175,7 @@ public class BankAccountService {
           .transactionStatus(TransactionStatus.FAILED)
           .build();
       transactionRepository.save(transaction);
-      throw new IllegalArgumentException("残高不足です。");
+      throw new IllegalArgumentException("残高が不足しています。");
     }
     return BankAccountMapper.toResponse(account);
   }
@@ -182,9 +188,6 @@ public class BankAccountService {
    */
   @Transactional
   public String closeAccount(String accountNumber) {
-    if (accountNumber == null || accountNumber.trim().isEmpty()) {
-      throw new IllegalArgumentException("口座番号が無効です。");
-    }
     BankAccount account = bankAccountRepository.findById(accountNumber)
         .orElseThrow(() -> new ResourceNotFoundException("口座が存在しません。"));
     if (account.getBalance() > 0) {
