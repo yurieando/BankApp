@@ -7,43 +7,43 @@
 
 ## 主な機能
 
-口座の開設（7桁の連番で自動生成）
+- 口座の開設（7桁の連番で自動生成）
 
-口座情報の照会
+- 口座情報の照会
 
-入金・出金処理
+- 入金・出金処理
 
-口座解約（残高ゼロのみ可能）
+- 口座解約（残高ゼロのみ可能）
 
-取引履歴の取得（口座別、取引種類別）
+- 取引履歴の取得（口座別、取引種類別）
 
-Swagger UI による API ドキュメント表示
+- Swagger UI による API ドキュメント表示
 
 ## 技術スタック
 
-Java 17
+- Java 17
 
-Spring Boot 3.5.0
+- Spring Boot 3.5.0
 
-Spring Web / Validation / Data JPA
+- Spring Web / Validation / Data JPA
 
-MySQL
+- MySQL
 
-JUnit + Mockito によるユニットテスト
+- JUnit + Mockito によるユニットテスト
 
-SpringDoc OpenAPI によるドキュメント生成
+- SpringDoc OpenAPI によるドキュメント生成
 
 ## 動作確認方法
 
-MySQL 起動＆テーブル準備
+1. MySQL 起動＆テーブル準備
 
-application.yml に適切な DB 接続設定を記載
+2. application.yml に適切な DB 接続設定を記載
 
-プロジェクトをビルド・起動
+3. プロジェクトをビルド・起動
 
 ./gradlew bootRun
 
-Swagger UI にアクセス：
+4. Swagger UI にアクセス：
 
 http://localhost:8080/swagger-ui/index.html
 
@@ -62,9 +62,9 @@ http://localhost:8080/swagger-ui/index.html
 
 ## テスト
 
-サービス層、コントローラ層のユニットテストを実装済
+- サービス層、コントローラ層のユニットテストを実装済
 
-@Mock を使用して Repository をモック
+- @Mock を使用して Repository をモック
 
 ## テスト実行
 
@@ -72,13 +72,13 @@ http://localhost:8080/swagger-ui/index.html
 
 ## 注意事項
 
-取引情報は Transaction エンティティに記録されます
+- 取引情報は Transaction エンティティに記録されます
 
-口座番号は 0000001 からの7桁連番で自動生成
+- 口座番号は 0000001 からの7桁連番で自動生成
 
 ## 今後の課題
 
-認証／認可（例：Spring Security）
+- 認証／認可（例：Spring Security）
 
-DB統合テスト（TestContainers など）
+- DB統合テスト（TestContainers など）
 
