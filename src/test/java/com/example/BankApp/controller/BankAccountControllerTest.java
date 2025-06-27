@@ -141,7 +141,7 @@ class BankAccountControllerTest {
   }
 
   @Test
-  void 口座入金_異常系_入金金額が0円な場合_400エラーが返ること() throws Exception {
+  void 口座入金_異常系_入金金額が0円の場合_400エラーが返ること() throws Exception {
     String accountNumber = "0000001";
     String invalidJson = """
         {
@@ -210,7 +210,7 @@ class BankAccountControllerTest {
   }
 
   @Test
-  void 口座出金_異常系_出金金額が0円な場合_400エラーが返ること() throws Exception {
+  void 口座出金_異常系_出金金額が0円の場合_400エラーが返ること() throws Exception {
     String accountNumber = "0000001";
     String invalidJson = """
         {
