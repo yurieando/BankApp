@@ -55,16 +55,16 @@ http://localhost:8080/swagger-ui/index.html
 
 ## APIエンドポイント一覧
 
-| HTTPメソッド | エンドポイント                                | 概要                     |
-|----------|----------------------------------------|------------------------|
-| GET      | `/accountsForAdmin`                    | 管理者用の口座一覧取得            |
-| POST     | `/createAccount`                       | 新規口座開設                 |
-| GET      | `/account/{accountNumber}`             | 残高照会                   |
-| POST     | `/deposit/{accountNumber}`             | 入金処理                   |
-| POST     | `/withdraw/{accountNumber}`            | 出金処理                   |
-| POST     | `/closeAccount/{accountNumber}`        | 口座の解約                  |
-| GET      | `/allTransactions`                     | 全取引履歴の取得               |
-| GET      | `/accountTransactions/{accountNumber}` | 指定口座の取引履歴取得（任意でタイプ指定可） |
+| HTTPメソッド | エンドポイント                                | 概要                      |
+|----------|----------------------------------------|-------------------------|
+| GET      | `/accountsForAdmin`                    | 管理者用の口座一覧取得             |
+| POST     | `/createAccount`                       | 新規口座開設                  |
+| GET      | `/account/{accountNumber}`             | 残高照会                    |
+| POST     | `/deposit/{accountNumber}`             | 入金処理                    |
+| POST     | `/withdraw/{accountNumber}`            | 出金処理                    |
+| POST     | `/closeAccount/{accountNumber}`        | 口座解約                    |
+| GET      | `/allTransactions`                     | 全取引履歴取得                 |
+| GET      | `/accountTransactions/{accountNumber}` | 指定口座の取引履歴取得（任意で取引種類指定可） |
 
 ## テスト
 
