@@ -51,30 +51,28 @@
 
 ## 動作確認方法
 
-1. MySQL 起動＆テーブル準備
+1. MySQL を起動し、テーブルを準備する
+2. `application.yml` に適切な DB 接続設定を記載する
+3. プロジェクトをビルド・起動する
 
-2. application.yml に適切な DB 接続設定を記載
-
-3. プロジェクトをビルド・起動
-
-./gradlew bootRun
-
+   ```bash
+   ./gradlew bootRun
 4. Swagger UI にアクセス：
 
 http://localhost:8080/swagger-ui/index.html
 
 ## APIエンドポイント一覧
 
-| HTTPメソッド | エンドポイント                                | 概要                      |
-|----------|----------------------------------------|-------------------------|
-| GET      | `/accountsForAdmin`                    | 管理者用の口座一覧取得             |
-| POST     | `/createAccount`                       | 新規口座開設                  |
-| GET      | `/account/{accountNumber}`             | 残高照会                    |
-| POST     | `/deposit/{accountNumber}`             | 入金処理                    |
-| POST     | `/withdraw/{accountNumber}`            | 出金処理                    |
-| POST     | `/closeAccount/{accountNumber}`        | 口座解約                    |
-| GET      | `/allTransactions`                     | 全取引履歴取得                 |
-| GET      | `/accountTransactions/{accountNumber}` | 指定口座の取引履歴取得（任意で取引種類指定可） |
+| HTTPメソッド | エンドポイント                         | 概要                      |
+|----------|---------------------------------|-------------------------|
+| GET      | `/accountsForAdmin`             | 管理者用の口座一覧取得             |
+| POST     | `/createAccount`                | 新規口座開設                  |
+| GET      | `/account/{accountNumber}`      | 残高照会                    |
+| POST     | `/deposit/{accountNumber}`      | 入金処理                    |
+| POST     | `/withdraw/{accountNumber}`     | 出金処理                    |
+| POST     | `/closeAccount/{accountNumber}` | 口座解約                    |
+| GET      | `/accountLogs`                  | 全取引履歴取得                 |
+| GET      | `/accountLog/{accountNumber}`   | 指定口座の取引履歴取得（任意で取引種類指定可） |
 
 ## テスト
 
@@ -88,6 +86,6 @@ http://localhost:8080/swagger-ui/index.html
 
 ## 注意事項
 
-- 取引情報は Transaction エンティティに記録されます
+- 取引情報は AccountLog エンティティに記録されます
 
 - 口座番号は 0000001 からの7桁連番で自動生成
