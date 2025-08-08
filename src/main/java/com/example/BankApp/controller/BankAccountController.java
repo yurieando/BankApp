@@ -39,9 +39,9 @@ public class BankAccountController {
   }
 
   /*
-   * 新しい口座を作成します。
+   * 新しい口座を開設します。
    * @param request 口座情報を含むリクエストボディ
-   * @return 作成された口座の情報
+   * @return 開設された口座の情報
    */
   @PostMapping("/createAccount")
   public BankAccountResponse createAccount(@Valid @RequestBody AccountCreationRequest request) {
