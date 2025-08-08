@@ -61,7 +61,7 @@ class BankAccountControllerTest {
   }
 
   @Test
-  void 口座作成_正常系_口座を作成できること() throws Exception {
+  void 口座開設_正常系_口座を開設できること() throws Exception {
     String validJson = """
         {
           "accountHolderName": "テスト氏名"
@@ -79,7 +79,7 @@ class BankAccountControllerTest {
   }
 
   @Test
-  void 口座作成_必須項目が未入力の場合_400エラーが返ること() throws Exception {
+  void 口座開設_必須項目が未入力の場合_400エラーが返ること() throws Exception {
     String invalidJson = """
          {
            "accountHolderName": ""
