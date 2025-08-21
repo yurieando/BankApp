@@ -15,7 +15,8 @@ import com.example.BankApp.model.AccountLog;
 import com.example.BankApp.model.AccountLog.AccountLogStatus;
 import com.example.BankApp.model.AccountLog.AccountLogType;
 import com.example.BankApp.model.BankAccount;
-import com.example.BankApp.repository.AccountLogRepository;
+import com.example.BankApp.model.BankAccount.Role;
+import com.example.BankApp.model.Transaction;
 import com.example.BankApp.repository.BankAccountRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,8 @@ class BankAccountServiceTest {
 
   @Test
   void 口座一覧取得_正常系_リポジトリからのデータが正しく変換されていること() {
-    BankAccount account = new BankAccount("0000001", "テスト氏名", 1000, true);
+    BankAccount account = new BankAccount("0000001", "password", "テスト氏名", 1000, true,
+        Role.ACCOUNT_USER);
     List<BankAccount> accountList = List.of(account);
 
     when(bankAccountRepository.findAll(Sort.by(Sort.Direction.DESC, "accountNumber")))
@@ -77,7 +79,7 @@ class BankAccountServiceTest {
 
   @Test
   void 口座開設_正常系_リポジトリが正しく呼び出され保存内容も正しいこと() {
-    AccountCreationRequest request = new AccountCreationRequest("テスト氏名");
+    AccountCreationRequest request = new AccountCreationRequest("テスト氏名", "password");
 
     when(bankAccountRepository.save(any(BankAccount.class)))
         .thenAnswer(invocation -> invocation.getArgument(0)); // 保存された値をそのまま返す
@@ -97,9 +99,10 @@ class BankAccountServiceTest {
 
   @Test
   void 口座開設_正常系_口座番号が連番で生成されていること() {
-    AccountCreationRequest request = new AccountCreationRequest("テスト氏名");
+    AccountCreationRequest request = new AccountCreationRequest("テスト氏名", "password");
 
-    BankAccount existingAccount = new BankAccount("0000001", "既存氏名", 1000, true);
+    BankAccount existingAccount = new BankAccount("0000001", "password", "既存氏名", 1000, true,
+        Role.ACCOUNT_USER);
     when(bankAccountRepository.findAll(Sort.by(Sort.Direction.DESC, "accountNumber")))
         .thenReturn(List.of(existingAccount));
 
@@ -110,7 +113,7 @@ class BankAccountServiceTest {
 
   @Test
   void 口座開設_正常系_口座開設時のトランザクションが正しく保存されていること() {
-    AccountCreationRequest request = new AccountCreationRequest("テスト氏名");
+    AccountCreationRequest request = new AccountCreationRequest("テスト氏名", "password");
 
     when(bankAccountRepository.save(any(BankAccount.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
@@ -132,10 +135,11 @@ class BankAccountServiceTest {
 
   @Test
   void 口座開設_異常系_口座番号が７桁を超えた時にエラーが返ること() {
-    AccountCreationRequest request = new AccountCreationRequest("テスト氏名");
+    AccountCreationRequest request = new AccountCreationRequest("テスト氏名", "password");
 
     when(bankAccountRepository.findAll(Sort.by(Sort.Direction.DESC, "accountNumber")))
-        .thenReturn(List.of(new BankAccount("9999999", "既存", 1000, true)));
+        .thenReturn(
+            List.of(new BankAccount("9999999", "password", "既存", 1000, true, Role.ACCOUNT_USER)));
 
     Exception e = assertThrows(IllegalStateException.class, () -> {
       bankAccountService.createAccount(request);
@@ -148,7 +152,8 @@ class BankAccountServiceTest {
   @Test
   void 口座入金_正常系_リポジトリが正しく呼び出され保存内容も正しいこと() throws Exception {
     String accountNumber = "0000001";
-    BankAccount existingAccount = new BankAccount(accountNumber, "テスト氏名", 1000, true);
+    BankAccount existingAccount = new BankAccount(accountNumber, "password", "テスト氏名", 1000,
+        true, Role.ACCOUNT_USER);
     AmountRequest amountRequest = new AmountRequest(500);
 
     when(bankAccountRepository.findById(accountNumber)).thenReturn(
@@ -193,7 +198,8 @@ class BankAccountServiceTest {
   @Test
   void 口座入金_異常系_口座が解約済である時にエラーが返ること() {
     String accountNumber = "0000001";
-    BankAccount existingAccount = new BankAccount(accountNumber, "テスト氏名", 1000, false);
+    BankAccount existingAccount = new BankAccount(accountNumber, "password", "テスト氏名", 1000,
+        false, Role.ACCOUNT_USER);
     AmountRequest amountRequest = new AmountRequest(500);
 
     when(bankAccountRepository.findById(accountNumber)).thenReturn(
@@ -209,7 +215,8 @@ class BankAccountServiceTest {
   @Test
   void 口座出金_正常系_リポジトリが正しく呼び出され保存内容も正しいこと() throws Exception {
     String accountNumber = "0000001";
-    BankAccount existingAccount = new BankAccount(accountNumber, "テスト氏名", 1000, true);
+    BankAccount existingAccount = new BankAccount(accountNumber, "password", "テスト氏名", 1000,
+        true, Role.ACCOUNT_USER);
     AmountRequest amountRequest = new AmountRequest(500);
 
     when(bankAccountRepository.findById(accountNumber)).thenReturn(
@@ -241,7 +248,8 @@ class BankAccountServiceTest {
   @Test
   void 口座出金_異常系_残高が足りない時にエラーが返ること() {
     String accountNumber = "0000001";
-    BankAccount existingAccount = new BankAccount(accountNumber, "テスト氏名", 1000, true);
+    BankAccount existingAccount = new BankAccount(accountNumber, "password", "テスト氏名", 1000,
+        true, Role.ACCOUNT_USER);
     AmountRequest amountRequest = new AmountRequest(1500);
 
     when(bankAccountRepository.findById(accountNumber)).thenReturn(
@@ -271,7 +279,8 @@ class BankAccountServiceTest {
   @Test
   void 口座出金_異常系_口座が解約済である時にエラーが返ること() {
     String accountNumber = "0000001";
-    BankAccount existingAccount = new BankAccount(accountNumber, "テスト氏名", 1000, false);
+    BankAccount existingAccount = new BankAccount(accountNumber, "password", "テスト氏名", 1000,
+        false, Role.ACCOUNT_USER);
     AmountRequest amountRequest = new AmountRequest(500);
 
     when(bankAccountRepository.findById(accountNumber)).thenReturn(
@@ -287,7 +296,8 @@ class BankAccountServiceTest {
   @Test
   void 口座解約_正常系_リポジトリが正しく呼び出され保存内容も正しいこと() {
     String accountNumber = "0000001";
-    BankAccount existingAccount = new BankAccount(accountNumber, "テスト氏名", 0, true);
+    BankAccount existingAccount = new BankAccount(accountNumber, "password", "テスト氏名", 0, true,
+        Role.ACCOUNT_USER);
 
     when(bankAccountRepository.findById(accountNumber)).thenReturn(
         Optional.of(existingAccount));
@@ -326,7 +336,8 @@ class BankAccountServiceTest {
   @Test
   void 口座解約_異常系_残高がある時にエラーが返ること() {
     String accountNumber = "0000001";
-    BankAccount existingAccount = new BankAccount(accountNumber, "テスト氏名", 1000, true);
+    BankAccount existingAccount = new BankAccount(accountNumber, "password", "テスト氏名", 1000,
+        true, Role.ACCOUNT_USER);
 
     when(bankAccountRepository.findById(accountNumber)).thenReturn(
         java.util.Optional.of(existingAccount));
@@ -341,7 +352,8 @@ class BankAccountServiceTest {
   @Test
   void 口座解約_異常系_既に解約済みの口座を解約しようとした場合にエラーが返ること() {
     String accountNumber = "0000001";
-    BankAccount existingAccount = new BankAccount(accountNumber, "テスト氏名", 0, false);
+    BankAccount existingAccount = new BankAccount(accountNumber, "password", "テスト氏名", 0, false,
+        Role.ACCOUNT_USER);
 
     when(bankAccountRepository.findById(accountNumber)).thenReturn(
         java.util.Optional.of(existingAccount));

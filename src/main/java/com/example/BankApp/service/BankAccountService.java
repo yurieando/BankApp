@@ -10,13 +10,17 @@ import com.example.BankApp.model.AccountLog;
 import com.example.BankApp.model.AccountLog.AccountLogStatus;
 import com.example.BankApp.model.AccountLog.AccountLogType;
 import com.example.BankApp.model.BankAccount;
-import com.example.BankApp.repository.AccountLogRepository;
+import com.example.BankApp.model.BankAccount.Role;
+import com.example.BankApp.model.Transaction;
+import com.example.BankApp.model.Transaction.TransactionStatus;
+import com.example.BankApp.model.Transaction.TransactionType;
 import com.example.BankApp.repository.BankAccountRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class BankAccountService {
 
   private final BankAccountRepository bankAccountRepository;
-  private final AccountLogRepository accountLogRepository;
+  private final TransactionRepository transactionRepository;
+  private final PasswordEncoder passwordEncoder;
 
   /**
    * すべての口座情報を取得します。
@@ -50,11 +55,20 @@ public class BankAccountService {
   @Transactional
   public BankAccountResponse createAccount(AccountCreationRequest request) {
     String accountNumber = generateSequentialAccountNumber();
-    BankAccount account = new BankAccount(accountNumber, request.getAccountHolderName(), 0, true);
-    bankAccountRepository.save(account);
+    String encoded = passwordEncoder.encode(request.getPassword());
 
-    AccountLog accountLog = AccountLog.builder()
-        .accountLogId(UUID.randomUUID().toString())
+    BankAccount account = new BankAccount(
+        accountNumber,
+        encoded,
+        request.getAccountHolderName(),
+        0,
+        true,
+        Role.ACCOUNT_USER
+    );
+
+    bankAccountRepository.save(account);
+    Transaction transaction = Transaction.builder()
+        .transactionId(UUID.randomUUID().toString())
         .accountNumber(account.getAccountNumber())
         .accountLogType(AccountLogType.OPEN)
         .amount(0)
