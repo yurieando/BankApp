@@ -7,6 +7,7 @@ import com.example.BankApp.dto.AmountRequest;
 import com.example.BankApp.dto.BankAccountResponse;
 import com.example.BankApp.exception.ResourceNotFoundException;
 import com.example.BankApp.model.BankAccount;
+import com.example.BankApp.model.BankAccount.Role;
 import com.example.BankApp.model.Transaction;
 import com.example.BankApp.model.Transaction.TransactionStatus;
 import com.example.BankApp.model.Transaction.TransactionType;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,7 @@ public class BankAccountService {
 
   private final BankAccountRepository bankAccountRepository;
   private final TransactionRepository transactionRepository;
+  private final PasswordEncoder passwordEncoder;
 
   /**
    * すべての口座情報を取得します。
@@ -50,9 +53,18 @@ public class BankAccountService {
   @Transactional
   public BankAccountResponse createAccount(AccountCreationRequest request) {
     String accountNumber = generateSequentialAccountNumber();
-    BankAccount account = new BankAccount(accountNumber, request.getAccountHolderName(), 0, true);
-    bankAccountRepository.save(account);
+    String encoded = passwordEncoder.encode(request.getPassword());
 
+    BankAccount account = new BankAccount(
+        accountNumber,
+        encoded,
+        request.getAccountHolderName(),
+        0,
+        true,
+        Role.ACCOUNT_USER
+    );
+
+    bankAccountRepository.save(account);
     Transaction transaction = Transaction.builder()
         .transactionId(UUID.randomUUID().toString())
         .accountNumber(account.getAccountNumber())

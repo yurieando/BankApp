@@ -33,7 +33,7 @@ public class BankAccountController {
    * 口座の一覧を取得します。
    * @return 口座のリスト
    */
-  @GetMapping("/accountsForAdmin")
+  @GetMapping("/admin/accounts")
   public List<AdminBankAccountResponse> getAllAccounts() {
     return bankAccountService.getAllAccountsForAdmin();
   }
@@ -49,11 +49,11 @@ public class BankAccountController {
   }
 
   /*
-   *　個別の口座情報の照会をします。
+   *　残高照会をします。
    * @param accountNumber 口座番号
    * @return 指定された口座の情報(残高を含む)
    */
-  @GetMapping("/account/{accountNumber}")
+  @GetMapping("/balance/{accountNumber}")
   public BankAccountResponse getBalance(
       @PathVariable @Pattern(regexp = "\\d{7}", message = "口座番号は7桁の数字である必要があります")
       String accountNumber) {
@@ -86,15 +86,6 @@ public class BankAccountController {
       String accountNumber,
       @Valid @RequestBody AmountRequest amountRequest) {
     return bankAccountService.withdraw(accountNumber, amountRequest);
-  }
-
-  /*
-   * 全ての取引履歴を取得します。
-   * @return 取引履歴のリスト
-   */
-  @GetMapping("/allTransactions")
-  public List<Transaction> getAllTransactions() {
-    return transactionRepository.findAll();
   }
 
   /*
