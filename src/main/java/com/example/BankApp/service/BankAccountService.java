@@ -6,13 +6,15 @@ import com.example.BankApp.dto.AdminBankAccountResponse;
 import com.example.BankApp.dto.AmountRequest;
 import com.example.BankApp.dto.BankAccountResponse;
 import com.example.BankApp.exception.ResourceNotFoundException;
+import com.example.BankApp.model.AccountLog;
+import com.example.BankApp.model.AccountLog.AccountLogStatus;
+import com.example.BankApp.model.AccountLog.AccountLogType;
 import com.example.BankApp.model.BankAccount;
 import com.example.BankApp.model.BankAccount.Role;
 import com.example.BankApp.model.Transaction;
 import com.example.BankApp.model.Transaction.TransactionStatus;
 import com.example.BankApp.model.Transaction.TransactionType;
 import com.example.BankApp.repository.BankAccountRepository;
-import com.example.BankApp.repository.TransactionRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -68,13 +70,13 @@ public class BankAccountService {
     Transaction transaction = Transaction.builder()
         .transactionId(UUID.randomUUID().toString())
         .accountNumber(account.getAccountNumber())
-        .transactionType(TransactionType.OPEN)
+        .accountLogType(AccountLogType.OPEN)
         .amount(0)
         .balanceAfterTransaction(account.getBalance())
         .timestamp(LocalDateTime.now())
-        .transactionStatus(TransactionStatus.SUCCESS)
+        .accountLogStatus(AccountLogStatus.SUCCESS)
         .build();
-    transactionRepository.save(transaction);
+    accountLogRepository.save(accountLog);
     return BankAccountMapper.toResponse(account);
 
   }
@@ -133,16 +135,16 @@ public class BankAccountService {
     account.setBalance(account.getBalance() + amountRequest.getAmount());
     bankAccountRepository.save(account);
 
-    Transaction transaction = Transaction.builder()
-        .transactionId(UUID.randomUUID().toString())
+    AccountLog accountLog = AccountLog.builder()
+        .accountLogId(UUID.randomUUID().toString())
         .accountNumber(account.getAccountNumber())
-        .transactionType(TransactionType.DEPOSIT)
+        .accountLogType(AccountLogType.DEPOSIT)
         .amount(amountRequest.getAmount())
         .balanceAfterTransaction(account.getBalance())
         .timestamp(LocalDateTime.now())
-        .transactionStatus(TransactionStatus.SUCCESS)
+        .accountLogStatus(AccountLogStatus.SUCCESS)
         .build();
-    transactionRepository.save(transaction);
+    accountLogRepository.save(accountLog);
     return BankAccountMapper.toResponse(account);
   }
 
@@ -165,28 +167,28 @@ public class BankAccountService {
     if (amountrequest.getAmount() <= account.getBalance()) {
       account.setBalance(account.getBalance() - amountrequest.getAmount());
 
-      Transaction transaction = Transaction.builder()
-          .transactionId(UUID.randomUUID().toString())
+      AccountLog accountLog = AccountLog.builder()
+          .accountLogId(UUID.randomUUID().toString())
           .accountNumber(account.getAccountNumber())
-          .transactionType(TransactionType.WITHDRAW)
+          .accountLogType(AccountLogType.WITHDRAW)
           .amount(amountrequest.getAmount())
           .balanceAfterTransaction(account.getBalance())
           .timestamp(LocalDateTime.now())
-          .transactionStatus(TransactionStatus.SUCCESS)
+          .accountLogStatus(AccountLogStatus.SUCCESS)
           .build();
-      transactionRepository.save(transaction);
+      accountLogRepository.save(accountLog);
       bankAccountRepository.save(account);
     } else {
-      Transaction transaction = Transaction.builder()
-          .transactionId(UUID.randomUUID().toString())
+      AccountLog accountLog = AccountLog.builder()
+          .accountLogId(UUID.randomUUID().toString())
           .accountNumber(account.getAccountNumber())
-          .transactionType(TransactionType.WITHDRAW)
+          .accountLogType(AccountLogType.WITHDRAW)
           .amount(amountrequest.getAmount())
           .balanceAfterTransaction(account.getBalance())
           .timestamp(LocalDateTime.now())
-          .transactionStatus(TransactionStatus.FAILED)
+          .accountLogStatus(AccountLogStatus.FAILED)
           .build();
-      transactionRepository.save(transaction);
+      accountLogRepository.save(accountLog);
       throw new IllegalArgumentException("残高が不足しています。");
     }
     return BankAccountMapper.toResponse(account);
@@ -212,16 +214,16 @@ public class BankAccountService {
     account.setActive(false);
     bankAccountRepository.save(account);
 
-    Transaction transaction = Transaction.builder()
-        .transactionId(UUID.randomUUID().toString())
+    AccountLog accountLog = AccountLog.builder()
+        .accountLogId(UUID.randomUUID().toString())
         .accountNumber(accountNumber)
-        .transactionType(TransactionType.CLOSE)
+        .accountLogType(AccountLogType.CLOSE)
         .amount(0)
         .balanceAfterTransaction(0)
         .timestamp(LocalDateTime.now())
-        .transactionStatus(TransactionStatus.SUCCESS)
+        .accountLogStatus(AccountLogStatus.SUCCESS)
         .build();
-    transactionRepository.save(transaction);
+    accountLogRepository.save(accountLog);
 
     return "口座解約が完了しました。口座番号：" + accountNumber;
   }

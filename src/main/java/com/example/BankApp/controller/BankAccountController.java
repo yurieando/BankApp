@@ -5,8 +5,9 @@ import com.example.BankApp.dto.AdminBankAccountResponse;
 import com.example.BankApp.dto.AmountRequest;
 import com.example.BankApp.dto.BankAccountResponse;
 import com.example.BankApp.exception.ResourceNotFoundException;
-import com.example.BankApp.model.Transaction;
-import com.example.BankApp.repository.TransactionRepository;
+import com.example.BankApp.model.AccountLog;
+import com.example.BankApp.model.AccountLog.AccountLogType;
+import com.example.BankApp.repository.AccountLogRepository;
 import com.example.BankApp.service.BankAccountService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 public class BankAccountController {
 
-  private final TransactionRepository transactionRepository;
+  private final AccountLogRepository accountLogRepository;
   private final BankAccountService bankAccountService;
 
   /*
@@ -89,30 +90,31 @@ public class BankAccountController {
   }
 
   /*
+
    * 指定された口座の取引履歴を取引タイプでフィルタリングして取得します。
    * @param accountNumber 口座番号
-   * @param transactionType 取引タイプ（入金、出金）, nullの場合は全ての取引を取得
+   * @param accountLogType 取引タイプ（入金、出金）, nullの場合は全ての取引を取得
    * @return 指定された口座の取引履歴のリスト
    */
-  @GetMapping("/accountTransactions/{accountNumber}")
-  public List<Transaction> getAccountTransactions(
+  @GetMapping("/accountLog/{accountNumber}")
+  public List<AccountLog> getAccountLog(
       @PathVariable @Pattern(regexp = "\\d{7}", message = "口座番号は7桁の数字である必要があります")
       String accountNumber,
-      @RequestParam(required = false) Transaction.TransactionType transactionType) {
+      @RequestParam(required = false) AccountLogType accountLogType) {
 
-    List<Transaction> transactions;
+    List<AccountLog> accountLogs;
 
-    if (transactionType != null) {
-      transactions = transactionRepository.findByAccountNumberAndTransactionType(accountNumber,
-          transactionType);
+    if (accountLogType != null) {
+      accountLogs = accountLogRepository.findByAccountNumberAndAccountLogType(accountNumber,
+          accountLogType);
     } else {
-      transactions = transactionRepository.findByAccountNumber(accountNumber);
+      accountLogs = accountLogRepository.findByAccountNumber(accountNumber);
     }
 
-    if (transactions.isEmpty()) {
-      throw new ResourceNotFoundException("指定された口座の取引履歴が存在しません。");
+    if (accountLogs.isEmpty()) {
+      throw new ResourceNotFoundException("指定された口座のログが存在しません。");
     }
-    return transactions;
+    return accountLogs;
   }
 
   /*

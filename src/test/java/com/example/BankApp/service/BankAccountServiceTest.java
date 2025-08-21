@@ -11,13 +11,16 @@ import com.example.BankApp.dto.AdminBankAccountResponse;
 import com.example.BankApp.dto.AmountRequest;
 import com.example.BankApp.dto.BankAccountResponse;
 import com.example.BankApp.exception.ResourceNotFoundException;
+import com.example.BankApp.model.AccountLog;
+import com.example.BankApp.model.AccountLog.AccountLogStatus;
+import com.example.BankApp.model.AccountLog.AccountLogType;
 import com.example.BankApp.model.BankAccount;
 import com.example.BankApp.model.BankAccount.Role;
 import com.example.BankApp.model.Transaction;
 import com.example.BankApp.repository.BankAccountRepository;
-import com.example.BankApp.repository.TransactionRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -36,7 +39,7 @@ class BankAccountServiceTest {
   private BankAccountRepository bankAccountRepository;
 
   @Mock
-  private TransactionRepository transactionRepository;
+  private AccountLogRepository accountLogRepository;
 
   @InjectMocks
   private BankAccountService bankAccountService;
@@ -117,17 +120,17 @@ class BankAccountServiceTest {
 
     bankAccountService.createAccount(request);
 
-    ArgumentCaptor<Transaction> captor = ArgumentCaptor.forClass(Transaction.class);
-    verify(transactionRepository).save(captor.capture());
+    ArgumentCaptor<AccountLog> captor = ArgumentCaptor.forClass(AccountLog.class);
+    verify(accountLogRepository).save(captor.capture());
 
-    Transaction savedTransaction = captor.getValue();
+    AccountLog savedAccountLog = captor.getValue();
 
-    assertThat(savedTransaction.getTransactionType()).isEqualTo(Transaction.TransactionType.OPEN);
-    assertThat(savedTransaction.getTransactionStatus()).isEqualTo(
-        Transaction.TransactionStatus.SUCCESS);
-    assertThat(savedTransaction.getAmount()).isEqualTo(0);
-    assertThat(savedTransaction.getBalanceAfterTransaction()).isEqualTo(0);
-    assertThat(savedTransaction.getAccountNumber()).matches("\\d{7}");
+    assertThat(savedAccountLog.getAccountLogType()).isEqualTo(AccountLogType.OPEN);
+    assertThat(savedAccountLog.getAccountLogStatus()).isEqualTo(
+        AccountLogStatus.SUCCESS);
+    assertThat(savedAccountLog.getAmount()).isEqualTo(0);
+    assertThat(savedAccountLog.getBalanceAfterTransaction()).isEqualTo(0);
+    assertThat(savedAccountLog.getAccountNumber()).matches("\\d{7}");
   }
 
   @Test
@@ -154,7 +157,7 @@ class BankAccountServiceTest {
     AmountRequest amountRequest = new AmountRequest(500);
 
     when(bankAccountRepository.findById(accountNumber)).thenReturn(
-        java.util.Optional.of(existingAccount));
+        Optional.of(existingAccount));
     when(bankAccountRepository.save(any(BankAccount.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -164,15 +167,15 @@ class BankAccountServiceTest {
     verify(bankAccountRepository).save(accountCaptor.capture());
     assertThat(accountCaptor.getValue().getBalance()).isEqualTo(1500);
 
-    ArgumentCaptor<Transaction> transactionCaptor = ArgumentCaptor.forClass(Transaction.class);
-    verify(transactionRepository).save(transactionCaptor.capture());
-    Transaction savedTransaction = transactionCaptor.getValue();
-    assertThat(savedTransaction.getTransactionType()).isEqualTo(
-        Transaction.TransactionType.DEPOSIT);
-    assertThat(savedTransaction.getTransactionStatus()).isEqualTo(
-        Transaction.TransactionStatus.SUCCESS);
-    assertThat(savedTransaction.getAmount()).isEqualTo(500);
-    assertThat(savedTransaction.getBalanceAfterTransaction()).isEqualTo(1500);
+    ArgumentCaptor<AccountLog> transactionCaptor = ArgumentCaptor.forClass(AccountLog.class);
+    verify(accountLogRepository).save(transactionCaptor.capture());
+    AccountLog savedAccountLog = transactionCaptor.getValue();
+    assertThat(savedAccountLog.getAccountLogType()).isEqualTo(
+        AccountLogType.DEPOSIT);
+    assertThat(savedAccountLog.getAccountLogStatus()).isEqualTo(
+        AccountLogStatus.SUCCESS);
+    assertThat(savedAccountLog.getAmount()).isEqualTo(500);
+    assertThat(savedAccountLog.getBalanceAfterTransaction()).isEqualTo(1500);
 
     assertThat(response.getAccountNumber()).isEqualTo(accountNumber);
     assertThat(response.getBalance()).isEqualTo(1500);
@@ -217,7 +220,7 @@ class BankAccountServiceTest {
     AmountRequest amountRequest = new AmountRequest(500);
 
     when(bankAccountRepository.findById(accountNumber)).thenReturn(
-        java.util.Optional.of(existingAccount));
+        Optional.of(existingAccount));
     when(bankAccountRepository.save(any(BankAccount.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -227,16 +230,16 @@ class BankAccountServiceTest {
     verify(bankAccountRepository).save(accountCaptor.capture());
     assertThat(accountCaptor.getValue().getBalance()).isEqualTo(500);
 
-    ArgumentCaptor<Transaction> transactionCaptor = ArgumentCaptor.forClass(Transaction.class);
-    verify(transactionRepository).save(transactionCaptor.capture());
+    ArgumentCaptor<AccountLog> transactionCaptor = ArgumentCaptor.forClass(AccountLog.class);
+    verify(accountLogRepository).save(transactionCaptor.capture());
 
-    Transaction savedTransaction = transactionCaptor.getValue();
-    assertThat(savedTransaction.getTransactionType()).isEqualTo(
-        Transaction.TransactionType.WITHDRAW);
-    assertThat(savedTransaction.getTransactionStatus()).isEqualTo(
-        Transaction.TransactionStatus.SUCCESS);
-    assertThat(savedTransaction.getAmount()).isEqualTo(500);
-    assertThat(savedTransaction.getBalanceAfterTransaction()).isEqualTo(500);
+    AccountLog savedAccountLog = transactionCaptor.getValue();
+    assertThat(savedAccountLog.getAccountLogType()).isEqualTo(
+        AccountLogType.WITHDRAW);
+    assertThat(savedAccountLog.getAccountLogStatus()).isEqualTo(
+        AccountLogStatus.SUCCESS);
+    assertThat(savedAccountLog.getAmount()).isEqualTo(500);
+    assertThat(savedAccountLog.getBalanceAfterTransaction()).isEqualTo(500);
 
     assertThat(response.getAccountNumber()).isEqualTo(accountNumber);
     assertThat(response.getBalance()).isEqualTo(500);
@@ -297,7 +300,7 @@ class BankAccountServiceTest {
         Role.ACCOUNT_USER);
 
     when(bankAccountRepository.findById(accountNumber)).thenReturn(
-        java.util.Optional.of(existingAccount));
+        Optional.of(existingAccount));
     when(bankAccountRepository.save(any(BankAccount.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -308,13 +311,13 @@ class BankAccountServiceTest {
     assertThat(accountCaptor.getValue().isActive()).isFalse();
     assertThat(response).isEqualTo("口座解約が完了しました。口座番号：" + accountNumber);
 
-    ArgumentCaptor<Transaction> transactionCaptor = ArgumentCaptor.forClass(Transaction.class);
-    verify(transactionRepository).save(transactionCaptor.capture());
-    Transaction savedTransaction = transactionCaptor.getValue();
-    assertThat(savedTransaction.getTransactionType()).isEqualTo(Transaction.TransactionType.CLOSE);
-    assertThat(savedTransaction.getTransactionStatus()).isEqualTo(
-        Transaction.TransactionStatus.SUCCESS);
-    assertThat(savedTransaction.getAccountNumber()).isEqualTo(accountNumber);
+    ArgumentCaptor<AccountLog> transactionCaptor = ArgumentCaptor.forClass(AccountLog.class);
+    verify(accountLogRepository).save(transactionCaptor.capture());
+    AccountLog savedAccountLog = transactionCaptor.getValue();
+    assertThat(savedAccountLog.getAccountLogType()).isEqualTo(AccountLogType.CLOSE);
+    assertThat(savedAccountLog.getAccountLogStatus()).isEqualTo(
+        AccountLogStatus.SUCCESS);
+    assertThat(savedAccountLog.getAccountNumber()).isEqualTo(accountNumber);
   }
 
   @Test
