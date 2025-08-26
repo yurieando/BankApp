@@ -6,7 +6,6 @@ import com.example.BankApp.service.AdminUserService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminUserController {
 
   private final AdminUserService adminUserService;
-  private final PasswordEncoder passwordEncoder;
-
 
   /**
    * 新しい管理者ユーザーを登録します。
@@ -27,7 +24,7 @@ public class AdminUserController {
    */
   @PostMapping("/registerAdmin")
   public AdminUserResponse registerAdminUser(@Valid @RequestBody AdminUserRegisterRequest request) {
-    return adminUserService.register(request.getRawPassword(), request.getAdminUserName(),
+    return adminUserService.registerAdmin(request.getRawPassword(), request.getAdminUserName(),
         request.getRegisterPassword());
   }
 

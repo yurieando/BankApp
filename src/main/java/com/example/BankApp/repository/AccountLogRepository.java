@@ -11,4 +11,5 @@ public interface AccountLogRepository extends JpaRepository<AccountLog, String> 
 
   List<AccountLog> findByAccountNumberAndAccountLogType(String accountNumber,
       AccountLogType accountLogType);
+
 }

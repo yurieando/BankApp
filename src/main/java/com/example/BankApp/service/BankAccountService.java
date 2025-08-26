@@ -11,9 +11,7 @@ import com.example.BankApp.model.AccountLog.AccountLogStatus;
 import com.example.BankApp.model.AccountLog.AccountLogType;
 import com.example.BankApp.model.BankAccount;
 import com.example.BankApp.model.BankAccount.Role;
-import com.example.BankApp.model.Transaction;
-import com.example.BankApp.model.Transaction.TransactionStatus;
-import com.example.BankApp.model.Transaction.TransactionType;
+import com.example.BankApp.repository.AccountLogRepository;
 import com.example.BankApp.repository.BankAccountRepository;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BankAccountService {
 
   private final BankAccountRepository bankAccountRepository;
-  private final TransactionRepository transactionRepository;
+  private final AccountLogRepository accountLogRepository;
   private final PasswordEncoder passwordEncoder;
 
   /**
@@ -67,8 +65,8 @@ public class BankAccountService {
     );
 
     bankAccountRepository.save(account);
-    Transaction transaction = Transaction.builder()
-        .transactionId(UUID.randomUUID().toString())
+    AccountLog accountLog = AccountLog.builder()
+        .AccountLogId(UUID.randomUUID().toString())
         .accountNumber(account.getAccountNumber())
         .accountLogType(AccountLogType.OPEN)
         .amount(0)

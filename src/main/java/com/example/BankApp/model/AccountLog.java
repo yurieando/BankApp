@@ -26,6 +26,7 @@ public class AccountLog {
 
   @Enumerated(EnumType.STRING)
   @Column(length = 10)
+
   private AccountLogType accountLogType;
 
   private int amount;
@@ -36,6 +37,8 @@ public class AccountLog {
 
   @Enumerated(EnumType.STRING)
   @Column(length = 10)
+
+
   private AccountLogStatus accountLogStatus;
 
   public enum AccountLogType {
@@ -43,6 +46,7 @@ public class AccountLog {
   }
 
   public enum AccountLogStatus {
+
     SUCCESS, FAILED
   }
 }

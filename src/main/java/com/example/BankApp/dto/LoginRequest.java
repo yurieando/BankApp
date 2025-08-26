@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 public class LoginRequest {
 
-  @NotBlank
-  private String loginId; // adminId または accountNumber
-  @NotBlank
+  @NotBlank(message = "ログインIDは必須です")
+  private String loginId;   // adminId または accountNumber
+  @NotBlank(message = "パスワードは必須です")
   private String password;
 }

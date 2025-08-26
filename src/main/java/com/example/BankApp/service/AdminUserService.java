@@ -24,7 +24,7 @@ public class AdminUserService {
    * @param registerPassword
    * @return
    */
-  public AdminUserResponse register(String rawPassword, String adminUserName,
+  public AdminUserResponse registerAdmin(String rawPassword, String adminUserName,
       String registerPassword) {
     if (!"admin123".equals(registerPassword)) {
       throw new IllegalArgumentException("管理者登録には正しいパスワードが必要です");

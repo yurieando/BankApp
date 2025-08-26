@@ -6,7 +6,6 @@ import com.example.BankApp.dto.AmountRequest;
 import com.example.BankApp.dto.BankAccountResponse;
 import com.example.BankApp.exception.ResourceNotFoundException;
 import com.example.BankApp.model.AccountLog;
-import com.example.BankApp.model.AccountLog.AccountLogType;
 import com.example.BankApp.repository.AccountLogRepository;
 import com.example.BankApp.service.BankAccountService;
 import jakarta.validation.Valid;
@@ -97,6 +96,7 @@ public class BankAccountController {
    * @return 指定された口座の取引履歴のリスト
    */
   @GetMapping("/accountLog/{accountNumber}")
+
   public List<AccountLog> getAccountLog(
       @PathVariable @Pattern(regexp = "\\d{7}", message = "口座番号は7桁の数字である必要があります")
       String accountNumber,
@@ -107,11 +107,13 @@ public class BankAccountController {
     if (accountLogType != null) {
       accountLogs = accountLogRepository.findByAccountNumberAndAccountLogType(accountNumber,
           accountLogType);
+
     } else {
       accountLogs = accountLogRepository.findByAccountNumber(accountNumber);
     }
 
     if (accountLogs.isEmpty()) {
+
       throw new ResourceNotFoundException("指定された口座のログが存在しません。");
     }
     return accountLogs;

@@ -16,7 +16,7 @@ import com.example.BankApp.model.AccountLog.AccountLogStatus;
 import com.example.BankApp.model.AccountLog.AccountLogType;
 import com.example.BankApp.model.BankAccount;
 import com.example.BankApp.model.BankAccount.Role;
-import com.example.BankApp.model.Transaction;
+import com.example.BankApp.repository.AccountLogRepository;
 import com.example.BankApp.repository.BankAccountRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 
@@ -36,8 +37,9 @@ import org.springframework.test.web.servlet.MockMvc;
 class BankAccountServiceTest {
 
   @Mock
+  PasswordEncoder passwordEncoder;
+  @Mock
   private BankAccountRepository bankAccountRepository;
-
   @Mock
   private AccountLogRepository accountLogRepository;
 
@@ -79,7 +81,9 @@ class BankAccountServiceTest {
 
   @Test
   void 口座開設_正常系_リポジトリが正しく呼び出され保存内容も正しいこと() {
-    AccountCreationRequest request = new AccountCreationRequest("テスト氏名", "password");
+    AccountCreationRequest request = new AccountCreationRequest("テスト氏名", "password123");
+
+    when(passwordEncoder.encode("password123")).thenReturn("ENCODED");
 
     when(bankAccountRepository.save(any(BankAccount.class)))
         .thenAnswer(invocation -> invocation.getArgument(0)); // 保存された値をそのまま返す
@@ -99,10 +103,13 @@ class BankAccountServiceTest {
 
   @Test
   void 口座開設_正常系_口座番号が連番で生成されていること() {
-    AccountCreationRequest request = new AccountCreationRequest("テスト氏名", "password");
+    AccountCreationRequest request = new AccountCreationRequest("テスト氏名", "password123");
 
     BankAccount existingAccount = new BankAccount("0000001", "password", "既存氏名", 1000, true,
         Role.ACCOUNT_USER);
+
+    when(passwordEncoder.encode("password123")).thenReturn("ENCODED");
+
     when(bankAccountRepository.findAll(Sort.by(Sort.Direction.DESC, "accountNumber")))
         .thenReturn(List.of(existingAccount));
 
@@ -113,7 +120,9 @@ class BankAccountServiceTest {
 
   @Test
   void 口座開設_正常系_口座開設時のトランザクションが正しく保存されていること() {
-    AccountCreationRequest request = new AccountCreationRequest("テスト氏名", "password");
+    AccountCreationRequest request = new AccountCreationRequest("テスト氏名", "password123");
+
+    when(passwordEncoder.encode("password123")).thenReturn("ENCODED");
 
     when(bankAccountRepository.save(any(BankAccount.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
@@ -134,7 +143,7 @@ class BankAccountServiceTest {
   }
 
   @Test
-  void 口座開設_異常系_口座番号が７桁を超えた時にエラーが返ること() {
+  void 口座開設_異常系_口座番号が７桁を超えた場合はエラーが返されること() {
     AccountCreationRequest request = new AccountCreationRequest("テスト氏名", "password");
 
     when(bankAccountRepository.findAll(Sort.by(Sort.Direction.DESC, "accountNumber")))
@@ -182,7 +191,7 @@ class BankAccountServiceTest {
   }
 
   @Test
-  void 口座入金_異常系_存在しない口座に入金しようとした場合にエラーが返ること() {
+  void 口座入金_異常系_存在しない口座に入金しようとした場合はエラーが返されること() {
     String accountNumber = "0000001";
     AmountRequest amountRequest = new AmountRequest(500);
 
@@ -196,7 +205,7 @@ class BankAccountServiceTest {
   }
 
   @Test
-  void 口座入金_異常系_口座が解約済である時にエラーが返ること() {
+  void 口座入金_異常系_口座が解約済である場合はエラーが返されること() {
     String accountNumber = "0000001";
     BankAccount existingAccount = new BankAccount(accountNumber, "password", "テスト氏名", 1000,
         false, Role.ACCOUNT_USER);
@@ -234,6 +243,7 @@ class BankAccountServiceTest {
     verify(accountLogRepository).save(transactionCaptor.capture());
 
     AccountLog savedAccountLog = transactionCaptor.getValue();
+
     assertThat(savedAccountLog.getAccountLogType()).isEqualTo(
         AccountLogType.WITHDRAW);
     assertThat(savedAccountLog.getAccountLogStatus()).isEqualTo(
@@ -246,7 +256,7 @@ class BankAccountServiceTest {
   }
 
   @Test
-  void 口座出金_異常系_残高が足りない時にエラーが返ること() {
+  void 口座出金_異常系_残高不足の場合はエラーが返されること() {
     String accountNumber = "0000001";
     BankAccount existingAccount = new BankAccount(accountNumber, "password", "テスト氏名", 1000,
         true, Role.ACCOUNT_USER);
@@ -263,7 +273,7 @@ class BankAccountServiceTest {
   }
 
   @Test
-  void 口座出金_異常系_存在しない口座に出金しようとした場合にエラーが返ること() {
+  void 口座出金_異常系_口座が存在しない場合はエラーが返されること() {
     String accountNumber = "0000001";
     AmountRequest amountRequest = new AmountRequest(500);
 
@@ -277,7 +287,7 @@ class BankAccountServiceTest {
   }
 
   @Test
-  void 口座出金_異常系_口座が解約済である時にエラーが返ること() {
+  void 口座出金_異常系_口座が解約済の場合はエラーが返されること() {
     String accountNumber = "0000001";
     BankAccount existingAccount = new BankAccount(accountNumber, "password", "テスト氏名", 1000,
         false, Role.ACCOUNT_USER);
@@ -314,6 +324,7 @@ class BankAccountServiceTest {
     ArgumentCaptor<AccountLog> transactionCaptor = ArgumentCaptor.forClass(AccountLog.class);
     verify(accountLogRepository).save(transactionCaptor.capture());
     AccountLog savedAccountLog = transactionCaptor.getValue();
+
     assertThat(savedAccountLog.getAccountLogType()).isEqualTo(AccountLogType.CLOSE);
     assertThat(savedAccountLog.getAccountLogStatus()).isEqualTo(
         AccountLogStatus.SUCCESS);
@@ -321,7 +332,7 @@ class BankAccountServiceTest {
   }
 
   @Test
-  void 口座解約_異常系_口座が存在しない時にエラーが返ること() {
+  void 口座解約_異常系_口座が存在しない場合はエラーが返されること() {
     String accountNumber = "0000001";
 
     when(bankAccountRepository.findById(accountNumber)).thenReturn(java.util.Optional.empty());
@@ -334,7 +345,7 @@ class BankAccountServiceTest {
   }
 
   @Test
-  void 口座解約_異常系_残高がある時にエラーが返ること() {
+  void 口座解約_異常系_残高が残っている場合はエラーが返されること() {
     String accountNumber = "0000001";
     BankAccount existingAccount = new BankAccount(accountNumber, "password", "テスト氏名", 1000,
         true, Role.ACCOUNT_USER);
@@ -350,7 +361,7 @@ class BankAccountServiceTest {
   }
 
   @Test
-  void 口座解約_異常系_既に解約済みの口座を解約しようとした場合にエラーが返ること() {
+  void 口座解約_異常系_既に解約済の場合はエラーが返されること() {
     String accountNumber = "0000001";
     BankAccount existingAccount = new BankAccount(accountNumber, "password", "テスト氏名", 0, false,
         Role.ACCOUNT_USER);
