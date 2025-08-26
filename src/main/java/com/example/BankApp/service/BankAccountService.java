@@ -66,7 +66,7 @@ public class BankAccountService {
 
     bankAccountRepository.save(account);
     AccountLog accountLog = AccountLog.builder()
-        .AccountLogId(UUID.randomUUID().toString())
+        .accountLogId(UUID.randomUUID().toString())
         .accountNumber(account.getAccountNumber())
         .accountLogType(AccountLogType.OPEN)
         .amount(0)
