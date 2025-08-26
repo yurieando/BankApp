@@ -20,13 +20,14 @@ import lombok.NoArgsConstructor;
 public class AccountLog {
 
   @Id
-  private String AccountLogId;
+  private String accountLogId;
 
   private String accountNumber;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 10)
-  private TransactionType transactionType;
+
+  private AccountLogType accountLogType;
 
   private int amount;
 
@@ -36,13 +37,16 @@ public class AccountLog {
 
   @Enumerated(EnumType.STRING)
   @Column(length = 10)
-  private TransactionStatus transactionStatus;
 
-  public enum TransactionType {
+
+  private AccountLogStatus accountLogStatus;
+
+  public enum AccountLogType {
     DEPOSIT, WITHDRAW, OPEN, CLOSE
   }
 
-  public enum TransactionStatus {
+  public enum AccountLogStatus {
+
     SUCCESS, FAILED
   }
 }

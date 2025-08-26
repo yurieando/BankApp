@@ -7,8 +7,8 @@ import com.example.BankApp.dto.AmountRequest;
 import com.example.BankApp.dto.BankAccountResponse;
 import com.example.BankApp.exception.ResourceNotFoundException;
 import com.example.BankApp.model.AccountLog;
-import com.example.BankApp.model.AccountLog.TransactionStatus;
-import com.example.BankApp.model.AccountLog.TransactionType;
+import com.example.BankApp.model.AccountLog.AccountLogStatus;
+import com.example.BankApp.model.AccountLog.AccountLogType;
 import com.example.BankApp.model.BankAccount;
 import com.example.BankApp.model.BankAccount.Role;
 import com.example.BankApp.repository.AccountLogRepository;
@@ -68,11 +68,11 @@ public class BankAccountService {
     AccountLog accountLog = AccountLog.builder()
         .AccountLogId(UUID.randomUUID().toString())
         .accountNumber(account.getAccountNumber())
-        .transactionType(TransactionType.OPEN)
+        .accountLogType(AccountLogType.OPEN)
         .amount(0)
         .balanceAfterTransaction(account.getBalance())
         .timestamp(LocalDateTime.now())
-        .transactionStatus(TransactionStatus.SUCCESS)
+        .accountLogStatus(AccountLogStatus.SUCCESS)
         .build();
     accountLogRepository.save(accountLog);
     return BankAccountMapper.toResponse(account);
@@ -134,13 +134,13 @@ public class BankAccountService {
     bankAccountRepository.save(account);
 
     AccountLog accountLog = AccountLog.builder()
-        .AccountLogId(UUID.randomUUID().toString())
+        .accountLogId(UUID.randomUUID().toString())
         .accountNumber(account.getAccountNumber())
-        .transactionType(TransactionType.DEPOSIT)
+        .accountLogType(AccountLogType.DEPOSIT)
         .amount(amountRequest.getAmount())
         .balanceAfterTransaction(account.getBalance())
         .timestamp(LocalDateTime.now())
-        .transactionStatus(TransactionStatus.SUCCESS)
+        .accountLogStatus(AccountLogStatus.SUCCESS)
         .build();
     accountLogRepository.save(accountLog);
     return BankAccountMapper.toResponse(account);
@@ -166,25 +166,25 @@ public class BankAccountService {
       account.setBalance(account.getBalance() - amountrequest.getAmount());
 
       AccountLog accountLog = AccountLog.builder()
-          .AccountLogId(UUID.randomUUID().toString())
+          .accountLogId(UUID.randomUUID().toString())
           .accountNumber(account.getAccountNumber())
-          .transactionType(TransactionType.WITHDRAW)
+          .accountLogType(AccountLogType.WITHDRAW)
           .amount(amountrequest.getAmount())
           .balanceAfterTransaction(account.getBalance())
           .timestamp(LocalDateTime.now())
-          .transactionStatus(TransactionStatus.SUCCESS)
+          .accountLogStatus(AccountLogStatus.SUCCESS)
           .build();
       accountLogRepository.save(accountLog);
       bankAccountRepository.save(account);
     } else {
       AccountLog accountLog = AccountLog.builder()
-          .AccountLogId(UUID.randomUUID().toString())
+          .accountLogId(UUID.randomUUID().toString())
           .accountNumber(account.getAccountNumber())
-          .transactionType(TransactionType.WITHDRAW)
+          .accountLogType(AccountLogType.WITHDRAW)
           .amount(amountrequest.getAmount())
           .balanceAfterTransaction(account.getBalance())
           .timestamp(LocalDateTime.now())
-          .transactionStatus(TransactionStatus.FAILED)
+          .accountLogStatus(AccountLogStatus.FAILED)
           .build();
       accountLogRepository.save(accountLog);
       throw new IllegalArgumentException("残高が不足しています。");
@@ -213,13 +213,13 @@ public class BankAccountService {
     bankAccountRepository.save(account);
 
     AccountLog accountLog = AccountLog.builder()
-        .AccountLogId(UUID.randomUUID().toString())
+        .accountLogId(UUID.randomUUID().toString())
         .accountNumber(accountNumber)
-        .transactionType(TransactionType.CLOSE)
+        .accountLogType(AccountLogType.CLOSE)
         .amount(0)
         .balanceAfterTransaction(0)
         .timestamp(LocalDateTime.now())
-        .transactionStatus(TransactionStatus.SUCCESS)
+        .accountLogStatus(AccountLogStatus.SUCCESS)
         .build();
     accountLogRepository.save(accountLog);
 

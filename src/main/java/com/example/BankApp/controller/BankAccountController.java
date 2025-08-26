@@ -89,28 +89,32 @@ public class BankAccountController {
   }
 
   /*
+
    * 指定された口座の取引履歴を取引タイプでフィルタリングして取得します。
    * @param accountNumber 口座番号
-   * @param transactionType 取引タイプ（入金、出金）, nullの場合は全ての取引を取得
+   * @param accountLogType 取引タイプ（入金、出金）, nullの場合は全ての取引を取得
    * @return 指定された口座の取引履歴のリスト
    */
   @GetMapping("/accountLog/{accountNumber}")
-  public List<AccountLog> getAccountLogs(
+
+  public List<AccountLog> getAccountLog(
       @PathVariable @Pattern(regexp = "\\d{7}", message = "口座番号は7桁の数字である必要があります")
       String accountNumber,
-      @RequestParam(required = false) AccountLog.TransactionType transactionType) {
+      @RequestParam(required = false) AccountLogType accountLogType) {
 
     List<AccountLog> accountLogs;
 
-    if (transactionType != null) {
-      accountLogs = accountLogRepository.findByAccountNumberAndTransactionType(accountNumber,
-          transactionType);
+    if (accountLogType != null) {
+      accountLogs = accountLogRepository.findByAccountNumberAndAccountLogType(accountNumber,
+          accountLogType);
+
     } else {
       accountLogs = accountLogRepository.findByAccountNumber(accountNumber);
     }
 
     if (accountLogs.isEmpty()) {
-      throw new ResourceNotFoundException("指定された口座の取引履歴が存在しません。");
+
+      throw new ResourceNotFoundException("指定された口座のログが存在しません。");
     }
     return accountLogs;
   }

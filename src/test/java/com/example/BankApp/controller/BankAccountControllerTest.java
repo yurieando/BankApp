@@ -13,6 +13,7 @@ import com.example.BankApp.dto.AmountRequest;
 import com.example.BankApp.exception.GlobalExceptionHandler;
 import com.example.BankApp.exception.ResourceNotFoundException;
 import com.example.BankApp.model.AccountLog;
+import com.example.BankApp.model.AccountLog.AccountLogType;
 import com.example.BankApp.repository.AccountLogRepository;
 import com.example.BankApp.service.BankAccountService;
 import java.util.List;
@@ -335,16 +336,17 @@ class BankAccountControllerTest {
     String accountNumber = "0000001";
 
     List<AccountLog> dummyAccountLogs = List.of(new AccountLog());
-    when(accountLogRepository.findByAccountNumberAndTransactionType(accountNumber,
-        AccountLog.TransactionType.DEPOSIT))
+
+    when(accountLogRepository.findByAccountNumberAndAccountLogType(accountNumber,
+        AccountLogType.DEPOSIT))
         .thenReturn(dummyAccountLogs);
 
     mockMvc.perform(get("/accountLog/{accountNumber}", accountNumber)
-            .param("transactionType", "DEPOSIT"))
+            .param("accountLogType", "DEPOSIT"))
         .andExpect(status().isOk());
 
-    verify(accountLogRepository).findByAccountNumberAndTransactionType(accountNumber,
-        AccountLog.TransactionType.DEPOSIT);
+    verify(accountLogRepository).findByAccountNumberAndAccountLogType(accountNumber,
+        AccountLogType.DEPOSIT);
   }
 
   @Test
@@ -454,4 +456,3 @@ class BankAccountControllerTest {
     verify(bankAccountService).closeAccount(accountNumber);
   }
 }
-
