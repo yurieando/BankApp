@@ -6,6 +6,7 @@ import com.example.BankApp.dto.AmountRequest;
 import com.example.BankApp.dto.BankAccountResponse;
 import com.example.BankApp.exception.ResourceNotFoundException;
 import com.example.BankApp.model.AccountLog;
+import com.example.BankApp.model.AccountLog.AccountLogType;
 import com.example.BankApp.repository.AccountLogRepository;
 import com.example.BankApp.service.BankAccountService;
 import jakarta.validation.Valid;
