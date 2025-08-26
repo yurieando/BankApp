@@ -3,7 +3,7 @@
 ## 概要
 
 このアプリケーションは、銀行口座の開設・入出金・照会・解約などを行う RESTful API
-です。管理者は口座一覧や取引履歴の取得も可能です。
+です。管理者は口座一覧の取得も可能です。
 
 ## 機能一覧
 
@@ -19,7 +19,19 @@
 
 - 取引履歴の取得（口座別、取引種類別）
 
+- ログイン / ログアウト機能
+
 - Swagger UI による API ドキュメント表示
+
+## 認証・ログイン機能
+
+本APIは **Spring Security** によりセッション（`JSESSIONID`）ベースで認証します。  
+ユーザーは **管理者** と **口座保有者** の2種類です。
+
+### 役割（Role）
+
+- `ROLE_ADMIN` … 管理者機能にアクセス可能（例：口座一覧取得 `/admin/**` など）
+- `ROLE_ACCOUNT_USER` … 口座保有者向け機能にアクセス可能
 
 ## 課題（実務を想定した考慮点）
 
@@ -61,18 +73,20 @@
 
 http://localhost:8080/swagger-ui/index.html
 
+5. アプリ起動後はまず「管理者登録」または「口座開設」を行ってください。  
+   その後、登録した情報を使ってログインしてください。
+
 ## APIエンドポイント一覧
 
 | HTTPメソッド | エンドポイント                         | 概要                      |
 |----------|---------------------------------|-------------------------|
-| GET      | `/accountsForAdmin`             | 管理者用の口座一覧取得             |
-| POST     | `/createAccount`                | 新規口座開設                  |
+| POST     | `/login`                        | ログイン                    | |
 | GET      | `/account/{accountNumber}`      | 残高照会                    |
 | POST     | `/deposit/{accountNumber}`      | 入金処理                    |
 | POST     | `/withdraw/{accountNumber}`     | 出金処理                    |
-| POST     | `/closeAccount/{accountNumber}` | 口座解約                    |
-| GET      | `/accountLogs`                  | 全取引履歴取得                 |
+| POST     | `/closeAccount/{accountNumber}` | 口座解約                    |`                  | 全取引履歴取得                 |
 | GET      | `/accountLog/{accountNumber}`   | 指定口座の取引履歴取得（任意で取引種類指定可） |
+| POST     | `/logout`                       | ログアウト                   |
 
 ## テスト
 
