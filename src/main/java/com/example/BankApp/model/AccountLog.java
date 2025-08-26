@@ -17,10 +17,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 
-public class Transaction {
+public class AccountLog {
 
   @Id
-  private String transactionId;
+  private String AccountLogId;
 
   private String accountNumber;
 
