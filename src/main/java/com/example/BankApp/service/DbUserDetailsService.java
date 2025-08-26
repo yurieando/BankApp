@@ -18,6 +18,15 @@ public class DbUserDetailsService implements UserDetailsService {
   private final AdminUserRepository adminUserRepository;
   private final BankAccountRepository bankAccountRepository;
 
+
+  /**
+   * ユーザー検索
+   *
+   * @param username
+   * @return
+   * @throws UsernameNotFoundException
+   */
+
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     // 1) 管理者(adminId)として検索

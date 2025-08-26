@@ -23,6 +23,11 @@ public class AuthController {
 
   private final AuthenticationManager authenticationManager;
 
+  /**
+   * ログイン認証をします。
+   *
+   * @return　ユーザー情報
+   */
   @PostMapping("/login")
   public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req, HttpServletRequest request,
       HttpServletResponse response) {
@@ -50,6 +55,11 @@ public class AuthController {
     }
   }
 
+  /**
+   * ログイン中のユーザー情報を表示します。
+   *
+   * @return　ユーザー情報
+   */
   @GetMapping("/me")
   public ResponseEntity<?> me(@AuthenticationPrincipal UserDetails user) {
     if (user == null) {
@@ -62,6 +72,11 @@ public class AuthController {
     ));
   }
 
+  /**
+   * ログアウトします。
+   *
+   * @return　ログアウトメッセージ
+   */
   @PostMapping("/logout")
   public ResponseEntity<?> logout(
       jakarta.servlet.http.HttpServletRequest req,
