@@ -1,6 +1,6 @@
 package com.example.BankApp.dto;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-@JsonPropertyOrder({"message", "accountNumber", "accountHolderName", "balance"})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class BankAccountResponse {
 
   private String message;

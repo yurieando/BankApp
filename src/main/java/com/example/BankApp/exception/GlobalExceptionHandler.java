@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -32,8 +33,7 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * リクエストボディのバリデーションエラーを処理します。 例：@RequestBody で受け取ったオブジェクトのフィールド（@NotBlank, @Size など）が不正な場合。
-   * 対象：@Valid + @RequestBody（例：口座作成など） 例外：MethodArgumentNotValidException ステータス：400 Bad Request
+   * リクエストボディのバリデーションエラーを処理します。
    */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Map<String, String>> handleValidationExceptions(
@@ -45,9 +45,7 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * メソッド引数（@PathVariable や @RequestParam）のバリデーションエラーを処理します。 例：@Pattern や
-   * @Minなどのアノテーションに違反（例：口座番号が7桁でない）。 対象：@Validated + @PathVariable / @RequestParam
-   * 例外：ConstraintViolationException ステータス：400 Bad Request
+   * メソッド引数（@PathVariable や @RequestParam）のバリデーションエラーを処理します。
    */
   @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<Map<String, String>> handleConstraintViolation(
@@ -56,6 +54,17 @@ public class GlobalExceptionHandler {
     ex.getConstraintViolations().forEach(violation ->
         errors.put("field", violation.getMessage()));
     return ResponseEntity.badRequest().body(errors);
+  }
+
+  /**
+   * アクセス権限がない場合、HTTPステータス 403 Forbidden を返します。
+   * 例：他人の口座にアクセスしようとした場合など。
+
+   */
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<Map<String, String>> handleAccessDenied(AccessDeniedException ex) {
+    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        .body(Map.of("error", "この口座に対する権限がありません"));
   }
 
   /**

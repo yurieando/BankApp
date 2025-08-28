@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,6 +56,7 @@ public class BankAccountController {
    * @return 指定された口座の情報(残高を含む)
    */
   @GetMapping("/balance/{accountNumber}")
+  @PreAuthorize("#accountNumber == authentication.name or hasRole('ADMIN')")
   public BankAccountResponse getBalance(
       @PathVariable @Pattern(regexp = "\\d{7}", message = "口座番号は7桁の数字である必要があります")
       String accountNumber) {
@@ -68,6 +70,7 @@ public class BankAccountController {
    * @return 入金後の口座情報
    */
   @PostMapping("/deposit/{accountNumber}")
+  @PreAuthorize("#accountNumber == authentication.name or hasRole('ADMIN')")
   public BankAccountResponse deposit(
       @PathVariable @Pattern(regexp = "\\d{7}", message = "口座番号は7桁の数字である必要があります")
       String accountNumber,
@@ -82,6 +85,7 @@ public class BankAccountController {
    * @return 出金後の口座情報
    */
   @PostMapping("/withdraw/{accountNumber}")
+  @PreAuthorize("#accountNumber == authentication.name or hasRole('ADMIN')")
   public BankAccountResponse withdraw(
       @PathVariable @Pattern(regexp = "\\d{7}", message = "口座番号は7桁の数字である必要があります")
       String accountNumber,
@@ -97,7 +101,7 @@ public class BankAccountController {
    * @return 指定された口座の取引履歴のリスト
    */
   @GetMapping("/accountLog/{accountNumber}")
-
+  @PreAuthorize("#accountNumber == authentication.name or hasRole('ADMIN')")
   public List<AccountLog> getAccountLog(
       @PathVariable @Pattern(regexp = "\\d{7}", message = "口座番号は7桁の数字である必要があります")
       String accountNumber,
@@ -126,6 +130,7 @@ public class BankAccountController {
    * @return 解約された口座の情報
    */
   @PostMapping("/closeAccount/{accountNumber}")
+  @PreAuthorize("#accountNumber == authentication.name or hasRole('ADMIN')")
   public String closeAccount(
       @PathVariable @Pattern(regexp = "\\d{7}", message = "口座番号は7桁の数字である必要があります")
       String accountNumber) {

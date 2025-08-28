@@ -21,9 +21,12 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -112,6 +115,8 @@ public class BankAccountService {
    */
   @Transactional
   public BankAccountResponse getBalance(String accountNumber) {
+    ensureOwner(accountNumber);
+
     BankAccount account = bankAccountRepository.findById(accountNumber)
         .orElseThrow(() -> new ResourceNotFoundException("口座が存在しません。"));
     return toResponse(account);
@@ -126,6 +131,8 @@ public class BankAccountService {
    */
   @Transactional
   public BankAccountResponse deposit(String accountNumber, AmountRequest amountRequest) {
+    ensureOwner(accountNumber);
+
     BankAccount account = bankAccountRepository.findById(accountNumber)
         .orElseThrow(() -> new ResourceNotFoundException("口座が存在しません。"));
 
@@ -160,6 +167,8 @@ public class BankAccountService {
    */
   @Transactional
   public BankAccountResponse withdraw(String accountNumber, AmountRequest amountRequest) {
+    ensureOwner(accountNumber);
+
     BankAccount account = bankAccountRepository.findById(accountNumber)
         .orElseThrow(() -> new ResourceNotFoundException("口座が存在しません。"));
 
@@ -207,6 +216,8 @@ public class BankAccountService {
    */
   @Transactional
   public String closeAccount(String accountNumber) {
+    ensureOwner(accountNumber);
+
     BankAccount account = bankAccountRepository.findById(accountNumber)
         .orElseThrow(() -> new ResourceNotFoundException("口座が存在しません。"));
     if (account.getBalance() > 0) {
@@ -231,5 +242,19 @@ public class BankAccountService {
     accountLogRepository.save(accountLog);
 
     return "口座解約が完了しました。口座番号：" + accountNumber;
+  }
+
+  /**
+   * 口座保有者かどうか確認します。
+   *
+   * @param accountNumber
+   */
+  private void ensureOwner(String accountNumber) {
+    var auth = SecurityContextHolder.getContext().getAuthentication();
+
+    if (!auth.getName().equals(accountNumber) &&
+        auth.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+      throw new AccessDeniedException("この口座に対する権限がありません");
+    }
   }
 }
