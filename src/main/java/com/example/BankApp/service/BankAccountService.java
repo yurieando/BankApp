@@ -1,5 +1,8 @@
 package com.example.BankApp.service;
 
+import static com.example.BankApp.Mapper.BankAccountMapper.toResponse;
+import static com.example.BankApp.util.MoneyFormat.yen;
+
 import com.example.BankApp.Mapper.BankAccountMapper;
 import com.example.BankApp.dto.AccountCreationRequest;
 import com.example.BankApp.dto.AdminBankAccountResponse;
@@ -75,8 +78,8 @@ public class BankAccountService {
         .accountLogStatus(AccountLogStatus.SUCCESS)
         .build();
     accountLogRepository.save(accountLog);
-    return BankAccountMapper.toResponse(account);
 
+    return toResponse(account, "口座開設が完了しました。");
   }
 
   /**
@@ -102,7 +105,7 @@ public class BankAccountService {
   }
 
   /**
-   * 口座情報を取得します。
+   * 残高情報を取得します。
    *
    * @param accountNumber 口座番号
    * @return 指定された口座の情報
@@ -111,7 +114,7 @@ public class BankAccountService {
   public BankAccountResponse getBalance(String accountNumber) {
     BankAccount account = bankAccountRepository.findById(accountNumber)
         .orElseThrow(() -> new ResourceNotFoundException("口座が存在しません。"));
-    return BankAccountMapper.toResponse(account);
+    return toResponse(account);
   }
 
   /**
@@ -143,18 +146,20 @@ public class BankAccountService {
         .accountLogStatus(AccountLogStatus.SUCCESS)
         .build();
     accountLogRepository.save(accountLog);
-    return BankAccountMapper.toResponse(account);
+
+    String msg = yen(amountRequest.getAmount()) + "入金しました。";
+    return toResponse(account, msg);
   }
 
   /**
    * 口座から出金を行います。
    *
    * @param accountNumber 口座番号
-   * @param amountrequest 出金金額を含むリクエスト
+   * @param amountRequest 出金金額を含むリクエスト
    * @return 出金後の口座情報
    */
   @Transactional
-  public BankAccountResponse withdraw(String accountNumber, AmountRequest amountrequest) {
+  public BankAccountResponse withdraw(String accountNumber, AmountRequest amountRequest) {
     BankAccount account = bankAccountRepository.findById(accountNumber)
         .orElseThrow(() -> new ResourceNotFoundException("口座が存在しません。"));
 
@@ -162,14 +167,14 @@ public class BankAccountService {
       throw new IllegalArgumentException("この口座は既に解約されています。");
     }
 
-    if (amountrequest.getAmount() <= account.getBalance()) {
-      account.setBalance(account.getBalance() - amountrequest.getAmount());
+    if (amountRequest.getAmount() <= account.getBalance()) {
+      account.setBalance(account.getBalance() - amountRequest.getAmount());
 
       AccountLog accountLog = AccountLog.builder()
           .accountLogId(UUID.randomUUID().toString())
           .accountNumber(account.getAccountNumber())
           .accountLogType(AccountLogType.WITHDRAW)
-          .amount(amountrequest.getAmount())
+          .amount(amountRequest.getAmount())
           .balanceAfterTransaction(account.getBalance())
           .timestamp(LocalDateTime.now())
           .accountLogStatus(AccountLogStatus.SUCCESS)
@@ -181,7 +186,7 @@ public class BankAccountService {
           .accountLogId(UUID.randomUUID().toString())
           .accountNumber(account.getAccountNumber())
           .accountLogType(AccountLogType.WITHDRAW)
-          .amount(amountrequest.getAmount())
+          .amount(amountRequest.getAmount())
           .balanceAfterTransaction(account.getBalance())
           .timestamp(LocalDateTime.now())
           .accountLogStatus(AccountLogStatus.FAILED)
@@ -189,7 +194,9 @@ public class BankAccountService {
       accountLogRepository.save(accountLog);
       throw new IllegalArgumentException("残高が不足しています。");
     }
-    return BankAccountMapper.toResponse(account);
+
+    String msg = yen(amountRequest.getAmount()) + "出金しました。";
+    return toResponse(account, msg);
   }
 
   /**

@@ -187,7 +187,7 @@ class BankAccountServiceTest {
     assertThat(savedAccountLog.getBalanceAfterTransaction()).isEqualTo(1500);
 
     assertThat(response.getAccountNumber()).isEqualTo(accountNumber);
-    assertThat(response.getBalance()).isEqualTo(1500);
+    assertThat(response.getBalance()).isEqualTo("1,500円");
   }
 
   @Test
@@ -252,7 +252,7 @@ class BankAccountServiceTest {
     assertThat(savedAccountLog.getBalanceAfterTransaction()).isEqualTo(500);
 
     assertThat(response.getAccountNumber()).isEqualTo(accountNumber);
-    assertThat(response.getBalance()).isEqualTo(500);
+    assertThat(response.getBalance()).isEqualTo("500円");
   }
 
   @Test
