@@ -78,8 +78,6 @@ http://localhost:8080/swagger-ui/index.html
 
 ## 動作イメージ
 
-https://github.com/user-attachments/assets/5076a3a5-9ce4-4103-adb9-caa010919526
-
 ### 口座開設 → ログイン
 
 <video src="https://github.com/user-attachments/assets/5076a3a5-9ce4-4103-adb9-caa010919526" controls width="400"></video>
