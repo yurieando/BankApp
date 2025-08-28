@@ -80,13 +80,17 @@ http://localhost:8080/swagger-ui/index.html
 
 https://github.com/user-attachments/assets/5076a3a5-9ce4-4103-adb9-caa010919526
 
+### 口座開設 → ログイン
 
-![口座開設→ログイン](https://github.com/user-attachments/assets/5076a3a5-9ce4-4103-adb9-caa010919526)
+<video src="https://github.com/user-attachments/assets/5076a3a5-9ce4-4103-adb9-caa010919526" controls width="400"></video>
 
-![入金・出金](https://github.com/user-attachments/assets/f92a6172-c15b-4c3a-b4ac-f5c6e24a80ab)
+### 入金・出金
 
-![取引履歴](https://github.com/user-attachments/assets/27a104d7-1242-4804-b31e-b4059de4664d)
+<video src="https://github.com/user-attachments/assets/f92a6172-c15b-4c3a-b4ac-f5c6e24a80ab" controls width="400"></video>
 
+### 取引履歴
+
+<video src="https://github.com/user-attachments/assets/27a104d7-1242-4804-b31e-b4059de4664d" controls width="400"></video>
 
 ## APIエンドポイント一覧
 
@@ -112,12 +116,27 @@ https://github.com/user-attachments/assets/5076a3a5-9ce4-4103-adb9-caa010919526
 
 ## 工夫した点
 
-- 残高表示は数値ではなくカンマを含んだ文字列にしたこと。
-  銀行業務において金額にカンマがないことは考えられないため、文字列で返す仕様にしました。
+- **残高表示を数値ではなくカンマ区切りの文字列に統一**  
+  銀行業務において、金額表示にカンマがないことは実務的に考えにくいため、API のレスポンスでも文字列として返す仕様にしました。  
+  例: `199000` → `"199,000円"`
 
-- 残高不足、残高有りのまま解約等できないよう設計したこと。
-  トランザクション管理に不足はあるものの、最低限矛盾が生じないようにしました。テストも重点的に作成しています。
- 
+- **業務上の矛盾を防ぐ基本的な制約を実装**  
+  - 残高不足の状態では出金不可  
+  - 残高が残ったままでは口座解約不可  
+  など、最低限の一貫性を担保しました。  
+  トランザクション管理は簡略化していますが、ユニットテストで重点的に検証しています。
+
+- **認証・認可を導入して権限を明確化**  
+  Spring Security を利用し、管理者と口座保有者の権限を分離しました。  
+  さらに「口座保有者は自分の口座にしかアクセスできない」制約を加え、不正アクセスを防いでいます。
+
+- **取引履歴を必ず記録する仕組み**  
+  入金・出金・解約などすべての操作を `AccountLog` に保存し、成功・失敗を含めて履歴として残すようにしました。  
+  これにより、システムの透明性と監査性を確保しています。
+
+- **エラーメッセージのユーザーフレンドリー化**  
+  「認証が必要です」「権限がありません」「残高が不足しています」など、想定できる利用者エラーには明示的なレスポンスを返すようにしました。
+
  
 
   
