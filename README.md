@@ -76,16 +76,28 @@ http://localhost:8080/swagger-ui/index.html
 5. アプリ起動後はまず「管理者登録」または「口座開設」を行ってください。  
    その後、登録した情報を使ってログインしてください。
 
+## 動作イメージ
+
+https://github.com/user-attachments/assets/5076a3a5-9ce4-4103-adb9-caa010919526
+
+
+![口座開設→ログイン](https://github.com/user-attachments/assets/5076a3a5-9ce4-4103-adb9-caa010919526)
+
+![入金・出金](https://github.com/user-attachments/assets/f92a6172-c15b-4c3a-b4ac-f5c6e24a80ab)
+
+![取引履歴](https://github.com/user-attachments/assets/27a104d7-1242-4804-b31e-b4059de4664d)
+
+
 ## APIエンドポイント一覧
 
 | HTTPメソッド | エンドポイント                         | 概要                      |
 |----------|---------------------------------|-------------------------|
 | POST     | `/login`                        | ログイン                    | |
-| GET      | `/account/{accountNumber}`      | 残高照会                    |
+| GET      | `/balance/{accountNumber}`      | 残高照会                    |
 | POST     | `/deposit/{accountNumber}`      | 入金処理                    |
 | POST     | `/withdraw/{accountNumber}`     | 出金処理                    |
-| POST     | `/closeAccount/{accountNumber}` | 口座解約                    |`                  | 全取引履歴取得                 |
-| GET      | `/accountLog/{accountNumber}`   | 指定口座の取引履歴取得（任意で取引種類指定可） |
+| POST     | `/closeAccount/{accountNumber}` | 口座解約                    |
+| GET      | `/accountLog/{accountNumber}`   | 指定口座の取引履歴取得（任意で取引種類指定可）|
 | POST     | `/logout`                       | ログアウト                   |
 
 ## テスト
@@ -98,8 +110,14 @@ http://localhost:8080/swagger-ui/index.html
 
 ./gradlew test
 
-## 注意事項
+## 工夫した点
 
-- 取引情報は AccountLog エンティティに記録されます
+- 残高表示は数値ではなくカンマを含んだ文字列にしたこと。
+  銀行業務において金額にカンマがないことは考えられないため、文字列で返す仕様にしました。
 
-- 口座番号は 0000001 からの7桁連番で自動生成
+- 残高不足、残高有りのまま解約等できないよう設計したこと。
+  トランザクション管理に不足はあるものの、最低限矛盾が生じないようにしました。テストも重点的に作成しています。
+ 
+ 
+
+  
