@@ -84,8 +84,7 @@ http://localhost:8080/swagger-ui/index.html
 <video src="https://github.com/user-attachments/assets/cc1a8931-5d2e-4a4a-8905-e0d5667abc35" width="400" controls></video>
 
 ### 取引履歴
-<video src="https://github.com/user-attachments/assets/528b0f41-18b1-41b2-8a2c-8ea7cd572ca8" width="400" controls></video>
-
+<video　src="https://github.com/user-attachments/assets/ccb19c4a-350e-44d5-80bd-08453d4039d3" width="400" controls></video>
 
 ## APIエンドポイント一覧
 
