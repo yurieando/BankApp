@@ -21,6 +21,7 @@ import com.example.BankApp.repository.BankAccountRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -29,6 +30,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -48,6 +52,16 @@ class BankAccountServiceTest {
 
   @Autowired
   private MockMvc mockMvc;
+
+  @BeforeEach
+  void setupSecurityContext() {
+    var auth = new UsernamePasswordAuthenticationToken(
+        "0000001", // ログイン中のユーザーID（口座番号と同じ）
+        null,
+        List.of(new SimpleGrantedAuthority("ROLE_ACCOUNT_USER"))
+    );
+    SecurityContextHolder.getContext().setAuthentication(auth);
+  }
 
   @Test
   void 口座一覧取得_正常系_リポジトリが正しく呼び出せていること() {
@@ -188,6 +202,7 @@ class BankAccountServiceTest {
 
     assertThat(response.getAccountNumber()).isEqualTo(accountNumber);
     assertThat(response.getBalance()).isEqualTo("1,500円");
+    assertThat(response.getMessage()).isEqualTo("500円入金しました。");
   }
 
   @Test
@@ -253,7 +268,9 @@ class BankAccountServiceTest {
 
     assertThat(response.getAccountNumber()).isEqualTo(accountNumber);
     assertThat(response.getBalance()).isEqualTo("500円");
+    assertThat(response.getMessage()).isEqualTo("500円出金しました。");
   }
+
 
   @Test
   void 口座出金_異常系_残高不足の場合はエラーが返されること() {

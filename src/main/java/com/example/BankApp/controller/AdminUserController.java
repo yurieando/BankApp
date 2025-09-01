@@ -24,8 +24,8 @@ public class AdminUserController {
    */
   @PostMapping("/registerAdmin")
   public AdminUserResponse registerAdminUser(@Valid @RequestBody AdminUserRegisterRequest request) {
-    return adminUserService.registerAdmin(request.getRawPassword(), request.getAdminUserName(),
-        request.getRegisterPassword());
+    return adminUserService.registerAdmin(request.getRegisterPassword(), request.getAdminUserName(),
+        request.getRawPassword());
   }
 
   /**

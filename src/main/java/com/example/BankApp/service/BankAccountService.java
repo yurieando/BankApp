@@ -1,8 +1,5 @@
 package com.example.BankApp.service;
 
-import static com.example.BankApp.Mapper.BankAccountMapper.toResponse;
-import static com.example.BankApp.util.MoneyFormat.yen;
-
 import com.example.BankApp.Mapper.BankAccountMapper;
 import com.example.BankApp.dto.AccountCreationRequest;
 import com.example.BankApp.dto.AdminBankAccountResponse;
@@ -16,6 +13,7 @@ import com.example.BankApp.model.BankAccount;
 import com.example.BankApp.model.BankAccount.Role;
 import com.example.BankApp.repository.AccountLogRepository;
 import com.example.BankApp.repository.BankAccountRepository;
+import com.example.BankApp.util.MoneyFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -82,7 +80,7 @@ public class BankAccountService {
         .build();
     accountLogRepository.save(accountLog);
 
-    return toResponse(account, "口座開設が完了しました。");
+    return BankAccountMapper.toResponse(account, "口座開設が完了しました。");
   }
 
   /**
@@ -119,7 +117,7 @@ public class BankAccountService {
 
     BankAccount account = bankAccountRepository.findById(accountNumber)
         .orElseThrow(() -> new ResourceNotFoundException("口座が存在しません。"));
-    return toResponse(account);
+    return BankAccountMapper.toResponse(account);
   }
 
   /**
@@ -154,8 +152,8 @@ public class BankAccountService {
         .build();
     accountLogRepository.save(accountLog);
 
-    String msg = yen(amountRequest.getAmount()) + "入金しました。";
-    return toResponse(account, msg);
+    String msg = MoneyFormat.yen(amountRequest.getAmount()) + "入金しました。";
+    return BankAccountMapper.toResponse(account, msg);
   }
 
   /**
@@ -204,8 +202,8 @@ public class BankAccountService {
       throw new IllegalArgumentException("残高が不足しています。");
     }
 
-    String msg = yen(amountRequest.getAmount()) + "出金しました。";
-    return toResponse(account, msg);
+    String msg = MoneyFormat.yen(amountRequest.getAmount()) + "出金しました。";
+    return BankAccountMapper.toResponse(account, msg);
   }
 
   /**
