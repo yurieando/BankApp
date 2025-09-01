@@ -39,9 +39,9 @@ class AdminUserControllerTest {
   void 管理者登録_正常系_登録処理が呼び出されること() throws Exception {
     String validJson = """
         {
-          "rawPassword": "password123",
+          "registerPassword": "admin123",
           "adminUserName": "テスト名",
-          "registerPassword": "admin123"
+          "rawPassword": "password123"
         }
         """;
 
@@ -51,9 +51,9 @@ class AdminUserControllerTest {
         .andExpect(status().isOk());
 
     verify(adminUserService).registerAdmin(
-        eq("password123"),
+        eq("admin123"),
         eq("テスト名"),
-        eq("admin123")
+        eq("password123")
     );
   }
 
@@ -61,9 +61,9 @@ class AdminUserControllerTest {
   void 管理者登録_異常系_パスワード未入力の場合は400エラーが返されること() throws Exception {
     String json = """
         {
-          "rawPassword": "",
+          "registerPassword": "admin123",
           "adminUserName": "テスト名",
-          "registerPassword": "admin123"
+          "rawPassword": ""
         }
         """;
 
@@ -79,9 +79,9 @@ class AdminUserControllerTest {
   void 管理者登録_異常系_ユーザー名が未入力の場合は400エラーが返されること() throws Exception {
     String json = """
         {
-          "rawPassword": "password123",
+          "registerPassword": "admin123",
           "adminUserName": "",
-          "registerPassword": "admin123"
+          "rawPassword": "password123"
         }
         """;
 
@@ -97,9 +97,9 @@ class AdminUserControllerTest {
       throws Exception {
     String json = """
         {
-          "rawPassword": "password123",
+          "registerPassword": "",
           "adminUserName": "テスト名",
-          "registerPassword": ""
+          "rawPassword": "password123"
         }
         """;
 
@@ -115,9 +115,9 @@ class AdminUserControllerTest {
       throws Exception {
     String json = """
         {
-          "rawPassword": "Password",
+          "registerPassword": "admin123",
           "adminUserName": "テスト名",
-          "registerPassword": "admin123"
+          "rawPassword": "password"
         }
         """;
 
@@ -134,15 +134,15 @@ class AdminUserControllerTest {
       throws Exception {
     String json = """
         {
-          "rawPassword": "password123",
+          "registerPassword": "wrong123",
           "adminUserName": "テスト名",
-          "registerPassword": "wrong123"
+          "rawPassword": "password123"
         }
         """;
 
     doThrow(new IllegalArgumentException("登録用パスワードが不正です"))
         .when(adminUserService)
-        .registerAdmin(anyString(), anyString(), eq("wrong123"));
+        .registerAdmin(anyString(), anyString(), anyString());
 
     mockMvc.perform(post("/registerAdmin")
             .contentType(MediaType.APPLICATION_JSON)

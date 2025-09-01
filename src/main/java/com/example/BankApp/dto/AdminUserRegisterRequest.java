@@ -12,16 +12,16 @@ import lombok.NoArgsConstructor;
 
 public class AdminUserRegisterRequest {
 
+  @NotBlank(message = "登録用パスワードは必須です")
+  private String registerPassword; //admin123
+
+  @NotBlank(message = "名前は必須です")
+  private String adminUserName;
+
   @NotBlank(message = "パスワードは8桁以上の英数字混合で入力してください")
   @Pattern(
       regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$",
       message = "パスワードは8桁以上の英数字混合で入力してください"
   )
   private String rawPassword;
-
-  @NotBlank(message = "名前は必須です")
-  private String adminUserName;
-
-  @NotBlank(message = "登録用パスワードは必須です")
-  private String registerPassword; //admin123
 }

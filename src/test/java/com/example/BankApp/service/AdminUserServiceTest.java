@@ -42,7 +42,7 @@ class AdminUserServiceTest {
 
   @Test
   void 管理者登録_正常系_保存されたデータが正しく返ること() {
-    String rawPassword = "Password123";
+    String rawPassword = "password123";
     String encoded = "ENCODED";
     String adminUserName = "テスト名";
 
@@ -58,7 +58,7 @@ class AdminUserServiceTest {
     });
 
     AdminUserResponse res =
-        adminUserService.registerAdmin(rawPassword, adminUserName, "admin123");
+        adminUserService.registerAdmin("admin123", adminUserName, rawPassword);
 
     assertNotNull(res);
     assertEquals("admin003", res.getAdminId());
@@ -81,7 +81,7 @@ class AdminUserServiceTest {
   void 管理者登録_異常系_登録用パスワード不一致の場合は例外メッセージが返ること() {
     IllegalArgumentException ex = assertThrows(
         IllegalArgumentException.class,
-        () -> adminUserService.registerAdmin("password123", "テスト名", "wrong123")
+        () -> adminUserService.registerAdmin("wrong123", "テスト名", "password123")
     );
     assertEquals("管理者登録には正しいパスワードが必要です", ex.getMessage());
 
