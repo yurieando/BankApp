@@ -77,18 +77,15 @@ http://localhost:8080/swagger-ui/index.html
    その後、登録した情報を使ってログインしてください。
 
 ## 動作イメージ
-
 ### 口座開設 → ログイン
-
-<video src="https://github.com/user-attachments/assets/5076a3a5-9ce4-4103-adb9-caa010919526" controls width="400"></video>
+<video src="https://github.com/user-attachments/assets/4139107f-018a-4c85-a0bb-9be86b554a69" width="400" controls></video>
 
 ### 入金・出金
-
-<video src="https://github.com/user-attachments/assets/f92a6172-c15b-4c3a-b4ac-f5c6e24a80ab" controls width="400"></video>
+<video src="https://github.com/user-attachments/assets/cc1a8931-5d2e-4a4a-8905-e0d5667abc35" width="400" controls></video>
 
 ### 取引履歴
+<video src="https://github.com/user-attachments/assets/528b0f41-18b1-41b2-8a2c-8ea7cd572ca8" width="400" controls></video>
 
-<video src="https://github.com/user-attachments/assets/27a104d7-1242-4804-b31e-b4059de4664d" controls width="400"></video>
 
 ## APIエンドポイント一覧
 
