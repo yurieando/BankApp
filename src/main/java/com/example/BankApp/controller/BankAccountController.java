@@ -110,11 +110,12 @@ public class BankAccountController {
     List<AccountLog> accountLogs;
 
     if (accountLogType != null) {
-      accountLogs = accountLogRepository.findByAccountNumberAndAccountLogType(accountNumber,
+      accountLogs = accountLogRepository.findByAccountNumberAndAccountLogTypeOrderByTimestampDesc(
+          accountNumber,
           accountLogType);
 
     } else {
-      accountLogs = accountLogRepository.findByAccountNumber(accountNumber);
+      accountLogs = accountLogRepository.findByAccountNumberOrderByTimestampDesc(accountNumber);
     }
 
     if (accountLogs.isEmpty()) {
