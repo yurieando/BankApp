@@ -18,11 +18,6 @@ public class AdminUserService {
 
   /**
    * 　管理者ユーザーの新規登録を行います。
-   *
-   * @param rawPassword
-   * @param adminUserName
-   * @param registerPassword
-   * @return
    */
   public AdminUserResponse registerAdmin(String registerPassword, String adminUserName,
       String rawPassword) {

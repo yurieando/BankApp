@@ -7,9 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AccountLogRepository extends JpaRepository<AccountLog, String> {
 
-  List<AccountLog> findByAccountNumber(String accountNumber);
+  List<AccountLog> findByAccountNumberOrderByTimestampDesc(String accountNumber);
 
-  List<AccountLog> findByAccountNumberAndAccountLogType(String accountNumber,
-      AccountLogType accountLogType);
-
+  List<AccountLog> findByAccountNumberAndAccountLogTypeOrderByTimestampDesc(
+      String accountNumber, AccountLogType type);
 }
