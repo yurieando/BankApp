@@ -322,13 +322,13 @@ class BankAccountControllerTest {
     String accountNumber = "0000001";
 
     List<AccountLog> dummyAccountLogs = List.of(new AccountLog());
-    when(accountLogRepository.findByAccountNumber(accountNumber))
+    when(accountLogRepository.findByAccountNumberOrderByTimestampDesc(accountNumber))
         .thenReturn(dummyAccountLogs);
 
     mockMvc.perform(get("/accountLog/{accountNumber}", accountNumber))
         .andExpect(status().isOk());
 
-    verify(accountLogRepository).findByAccountNumber(accountNumber);
+    verify(accountLogRepository).findByAccountNumberOrderByTimestampDesc(accountNumber);
   }
 
   @Test
@@ -337,15 +337,17 @@ class BankAccountControllerTest {
 
     List<AccountLog> dummyAccountLogs = List.of(new AccountLog());
 
-    when(accountLogRepository.findByAccountNumberAndAccountLogType(accountNumber,
-        AccountLogType.DEPOSIT))
+    when(
+        accountLogRepository.findByAccountNumberAndAccountLogTypeOrderByTimestampDesc(accountNumber,
+            AccountLogType.DEPOSIT))
         .thenReturn(dummyAccountLogs);
 
     mockMvc.perform(get("/accountLog/{accountNumber}", accountNumber)
             .param("accountLogType", "DEPOSIT"))
         .andExpect(status().isOk());
 
-    verify(accountLogRepository).findByAccountNumberAndAccountLogType(accountNumber,
+    verify(accountLogRepository).findByAccountNumberAndAccountLogTypeOrderByTimestampDesc(
+        accountNumber,
         AccountLogType.DEPOSIT);
   }
 
@@ -353,13 +355,13 @@ class BankAccountControllerTest {
   void 取引履歴取得_異常系_口座番号が存在しない場合は404エラーが返されること() throws Exception {
     String accountNumber = "0000000";
 
-    when(accountLogRepository.findByAccountNumber(accountNumber))
+    when(accountLogRepository.findByAccountNumberOrderByTimestampDesc(accountNumber))
         .thenThrow(new ResourceNotFoundException("口座が存在しません。"));
 
     mockMvc.perform(get("/accountLog/{accountNumber}", accountNumber))
         .andExpect(status().isNotFound());
 
-    verify(accountLogRepository).findByAccountNumber(accountNumber);
+    verify(accountLogRepository).findByAccountNumberOrderByTimestampDesc(accountNumber);
   }
 
   @Test
@@ -373,28 +375,28 @@ class BankAccountControllerTest {
   void 取引履歴取得_異常系_口座が解約済の場合は400エラーが返されること() throws Exception {
     String accountNumber = "0000001";
 
-    when(accountLogRepository.findByAccountNumber(accountNumber))
+    when(accountLogRepository.findByAccountNumberOrderByTimestampDesc(accountNumber))
         .thenThrow(new IllegalArgumentException("この口座は既に解約されています。"));
 
     mockMvc.perform(get("/accountLog/{accountNumber}", accountNumber))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error").value("この口座は既に解約されています。"));
 
-    verify(accountLogRepository).findByAccountNumber(accountNumber);
+    verify(accountLogRepository).findByAccountNumberOrderByTimestampDesc(accountNumber);
   }
 
   @Test
   void 取引履歴取得_異常系_取引履歴が存在しない場合は404エラーが返されること() throws Exception {
     String accountNumber = "0000001";
 
-    when(accountLogRepository.findByAccountNumber(accountNumber))
+    when(accountLogRepository.findByAccountNumberOrderByTimestampDesc(accountNumber))
         .thenThrow(new ResourceNotFoundException("取引履歴が存在しません。"));
 
     mockMvc.perform(get("/accountLog/{accountNumber}", accountNumber))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.error").value("取引履歴が存在しません。"));
 
-    verify(accountLogRepository).findByAccountNumber(accountNumber);
+    verify(accountLogRepository).findByAccountNumberOrderByTimestampDesc(accountNumber);
   }
 
 
